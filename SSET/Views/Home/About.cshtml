@@ -1,0 +1,31 @@
+@{
+    ViewData["Title"] = "Proje Hakkında";
+}
+
+<!-- Proje Bilgi Kartı -->
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white py-3">
+        <h4 class="mb-0 fw-bold text-primary">
+            <i class="bi bi-info-circle me-1"></i> @ViewBag.ProjectName
+        </h4>
+    </div>
+    <div class="card-body">
+        <p class="lead text-muted">@ViewBag.Description</p>
+
+        <h5 class="fw-bold mt-4">📌 1. Hafta İsterleri ve Karşılıkları:</h5>
+        <ul class="list-group list-group-flush my-3">
+            <li class="list-group-item">
+                <strong>1. Üç Controller:</strong> <code>HomeController</code>, <code>ExamController</code> ve <code>StudyPlanController</code>
+            </li>
+            <li class="list-group-item">
+                <strong>2. Minimum İki View:</strong> Her Controller için <code>Index</code> ve <code>Create</code> (veya <code>About</code>) sayfaları (Toplam 6 View)
+            </li>
+            <li class="list-group-item">
+                <strong>3. Responsive ve CSS Tasarım:</strong> Bootstrap 5 ve özel <code>site.css</code> ile mobil uyumlu kart mimarisi
+            </li>
+            <li class="list-group-item">
+                <strong>4. Dinamik Razor Alanı:</strong> <code>Exam/Index</code> sayfasında <code>@@foreach</code> döngüsüyle listelenen sınav tablosu
+            </li>
+        </ul>
+    </div>
+</div>

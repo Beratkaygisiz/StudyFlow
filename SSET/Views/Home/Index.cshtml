@@ -1,0 +1,44 @@
+@{
+    ViewData["Title"] = "Ana Sayfa";
+}
+
+<!-- Karşılama Kartı -->
+<div class="card shadow-sm border-0 mb-4 bg-primary text-white p-4 rounded-3">
+    <div class="card-body">
+        <h1 class="display-6 fw-bold">🎓 SSET'e Hoş Geldiniz</h1>
+        <p class="lead mb-0">@ViewBag.Message</p>
+    </div>
+</div>
+
+<!-- Responsive 2 Kolonlu Kart Yapısı -->
+<div class="row g-4">
+    <!-- Kart 1: Sınav Takibi Modülü -->
+    <div class="col-12 col-md-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white fw-bold text-primary">
+                <i class="bi bi-journal-check me-1"></i> Sınav Takip Modülü
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Yaklaşan sınavlarınızı, sınav tarihlerini ve hedeflediğiniz notları takip edin.</p>
+                <a asp-controller="Exam" asp-action="Index" class="btn btn-primary">
+                    Sınav Listesine Git &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kart 2: Çalışma Planı Modülü -->
+    <div class="col-12 col-md-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white fw-bold text-success">
+                <i class="bi bi-calendar-check me-1"></i> Ders Çalışma Planı
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Haftalık çalışmanız gereken konuları, süreleri ve tamamlama durumlarını planlayın.</p>
+                <a asp-controller="StudyPlan" asp-action="Index" class="btn btn-success">
+                    Çalışma Planına Git &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,61 @@
+@*
+    DİNAMİK RAZOR SAYFASI (Strongly Typed View):
+    Controller'dan gönderilen List<Exam> listesi model olarak yakalanır.
+*@
+@model List<SSET.Models.Exam>
+
+@{
+    ViewData["Title"] = "Sınav Listesi";
+}
+
+<!-- Başlık ve Yeni Ekleme Butonu -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="fw-bold text-dark mb-0">
+        <i class="bi bi-journal-check text-primary me-2"></i>Sınav Takip Listesi
+    </h3>
+    <a asp-controller="Exam" asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i> + Yeni Sınav Ekle
+    </a>
+</div>
+
+<!-- ========================================================================== -->
+<!-- ZORUNLU İSTER: RAZOR DİNAMİK ALAN (KART İÇİNDE HTML TABLOSU)               -->
+<!-- ========================================================================== -->
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white fw-bold text-secondary">
+        Kayıtlı Sınavlar (Toplam: @Model.Count)
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 50px;">#</th>
+                        <th>Ders Adı</th>
+                        <th>Sınav Tarihi</th>
+                        <th>Hedeflenen Not</th>
+                        <th>Açıklama</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @* 
+                        RAZOR DİNAMİK FOREACH DÖNGÜSÜ:
+                        Controller'dan gelen her bir sınav için bir HTML satırı (<tr>) basılır.
+                    *@
+                    @foreach (var exam in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold text-muted">@exam.Id</td>
+                            <td><strong>@exam.CourseName</strong></td>
+                            <td>@exam.ExamDate.ToString("dd.MM.yyyy HH:mm")</td>
+                            <td>
+                                <span class="badge bg-success fs-6">@exam.TargetScore / 100</span>
+                            </td>
+                            <td class="text-muted">@exam.Description</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

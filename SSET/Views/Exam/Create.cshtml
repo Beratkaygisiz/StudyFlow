@@ -1,0 +1,47 @@
+@model SSET.Models.Exam
+
+@{
+    ViewData["Title"] = "Yeni Sınav Ekle";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <!-- Form Kartı -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-primary text-white fw-bold">
+                <i class="bi bi-pencil-square me-1"></i> Yeni Sınav Ekle
+            </div>
+            <div class="card-body p-4">
+                <form asp-controller="Exam" asp-action="Create" method="post">
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Ders Adı</label>
+                        <input asp-for="CourseName" class="form-control" placeholder="Örn: Web Programlama" required />
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Sınav Tarihi</label>
+                            <input asp-for="ExamDate" type="datetime-local" class="form-control" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Hedeflenen Not (0-100)</label>
+                            <input asp-for="TargetScore" type="number" min="0" max="100" class="form-control" placeholder="Örn: 85" required />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Açıklama / Not</label>
+                        <input asp-for="Description" class="form-control" placeholder="Örn: Vize 1 - İlk 4 ünite" />
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a asp-controller="Exam" asp-action="Index" class="btn btn-outline-secondary">Vazgeç</a>
+                        <button type="submit" class="btn btn-primary fw-semibold">Sınavı Kaydet</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

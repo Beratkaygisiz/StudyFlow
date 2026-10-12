@@ -1,0 +1,40 @@
+/* ==========================================================================
+   SSET - Özel CSS Stilleri
+   Düz beyaz ekran olmaması için arka plan ve kart tasarımları
+   ========================================================================== */
+
+/* Sayfa Genel Görünümü */
+body {
+    /* Düz beyaz ekranı kırmak için modern ve göz yormayan yumuşak arka plan */
+    background-color: #f4f6fa;
+    color: #333333;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    margin-bottom: 60px;
+}
+
+/* Bootstrap Kart (Card) Yapıları */
+.card {
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.card-header {
+    border-top-left-radius: 10px !important;
+    border-top-right-radius: 10px !important;
+}
+
+/* Tablolar */
+.table {
+    margin-bottom: 0;
+    vertical-align: middle;
+}
+
+/* Alt Bilgi (Footer) */
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 55px;
+    line-height: 55px;
+}

@@ -1,0 +1,51 @@
+@model SSET.Models.StudyPlan
+
+@{
+    ViewData["Title"] = "Yeni Konu Ekle";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <!-- Form Kartı -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-success text-white fw-bold">
+                <i class="bi bi-bookmark-plus me-1"></i> Yeni Çalışma Konusu Ekle
+            </div>
+            <div class="card-body p-4">
+                <form asp-controller="StudyPlan" asp-action="Create" method="post">
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Ders Adı</label>
+                        <input asp-for="CourseName" class="form-control" placeholder="Örn: Web Programlama" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Çalışılacak Konu Başlığı</label>
+                        <input asp-for="TopicTitle" class="form-control" placeholder="Örn: Entity Framework Giriş" required />
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Hedef Süre (Saat)</label>
+                            <input asp-for="PlannedHours" type="number" min="1" max="50" class="form-control" placeholder="Örn: 3" required />
+                        </div>
+                        <div class="col-md-6 d-flex align-items-center pt-md-4">
+                            <div class="form-check mt-2">
+                                <input asp-for="IsCompleted" class="form-check-input" type="checkbox" id="checkCompleted" />
+                                <label class="form-check-label fw-semibold" for="checkCompleted">
+                                    Konu Tamamlandı mı?
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-controller="StudyPlan" asp-action="Index" class="btn btn-outline-secondary">Vazgeç</a>
+                        <button type="submit" class="btn btn-success fw-semibold">Konuyu Kaydet</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
