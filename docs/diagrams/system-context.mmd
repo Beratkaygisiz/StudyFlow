@@ -1,0 +1,6 @@
+flowchart TB
+  Student["Üniversite öğrencisi"] --> Browser["Responsive tarayıcı"]
+  Browser --> StudyFlow["StudyFlow MVC monolit"]
+  StudyFlow --> Database["SQL Server - Faz 2 sonrası"]
+  Team["Üç kişilik geliştirme ekibi"] --> Repository["GitHub kaynak ve dokümantasyon"]
+  Repository -. "Faz 6 kontrollü dağıtım" .-> StudyFlow

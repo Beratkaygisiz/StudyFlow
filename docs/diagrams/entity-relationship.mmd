@@ -1,0 +1,87 @@
+erDiagram
+  APPLICATION_USER ||--o{ COURSE : owns
+  APPLICATION_USER ||--o{ SUBMISSION_RECEIPT : submits
+  COURSE ||--o{ EXAM : has
+  COURSE ||--o{ TOPIC : has
+  COURSE ||--o{ STUDY_TASK : has
+  COURSE ||--o{ STUDY_SESSION : records
+  COURSE ||--o{ STUDY_PLAN_ITEM : contains
+  TOPIC o|--o{ STUDY_TASK : optional_topic
+  TOPIC o|--o{ STUDY_SESSION : optional_topic
+  STUDY_TASK ||--o{ STUDY_PLAN_ITEM : scheduled
+  STUDY_TASK o|--o{ STUDY_SESSION : optional_task
+  APPLICATION_USER {
+    string Id PK
+    string DisplayName
+    string TimeZoneId
+  }
+  COURSE {
+    int Id PK
+    string UserId FK
+    string Name
+    bool IsArchived
+    int WeeklyTargetMinutes
+    bytes RowVersion
+  }
+  EXAM {
+    int Id PK
+    string UserId FK
+    int CourseId FK
+    string Title
+    int Type
+    datetime ScheduledAt
+    bytes RowVersion
+  }
+  TOPIC {
+    int Id PK
+    string UserId FK
+    int CourseId FK
+    string Title
+    int Status
+    int SortOrder
+    string Notes
+    date ReviewOn
+    bytes RowVersion
+  }
+  STUDY_TASK {
+    int Id PK
+    string UserId FK
+    int CourseId FK
+    int TopicId FK
+    string Title
+    int Status
+    int Priority
+    date DueOn
+    int EstimatedMinutes
+    datetime CompletedAt
+    bytes RowVersion
+  }
+  STUDY_PLAN_ITEM {
+    int Id PK
+    string UserId FK
+    int CourseId FK
+    int TaskId FK
+    date PlannedOn
+    int PlannedMinutes
+    bytes RowVersion
+  }
+  STUDY_SESSION {
+    int Id PK
+    string UserId FK
+    int CourseId FK
+    int TaskId FK
+    int TopicId FK
+    datetime StartAt
+    datetime EndAt
+    int Source
+    bytes RowVersion
+  }
+  SUBMISSION_RECEIPT {
+    long Id PK
+    string UserId FK
+    string Operation
+    uuid OperationId
+    string PayloadHash
+    int ResourceId
+    datetime CreatedAt
+  }
