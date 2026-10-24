@@ -1,9 +1,0 @@
-flowchart TB
-  Client["Öğrenci tarayıcısı"] -->|HTTPS| Proxy["IIS veya güvenilen reverse proxy"]
-  Proxy --> App["StudyFlow ASP.NET Core süreci"]
-  App -->|Kısıtlı DB bağlantısı| SQL["SQL Server"]
-  App --> Keys["Kalıcı DataProtection keyring"]
-  App --> Logs["Kısıtlı teknik log"]
-  SQL --> Backup["Erişim kontrollü yedek"]
-  Secrets["Ortam sırları"] --> App
-  Release["Faz 6 onaylı yayın çıktısı"] --> App
