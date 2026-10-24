@@ -1,0 +1,28 @@
+# .NET ve IDE çıktıları
+**/bin/
+**/obj/
+.vs/
+.idea/
+*.user
+*.suo
+
+# Test, log ve yayın çıktıları
+**/TestResults/
+**/coverage/
+*.coverage*
+*.log
+publish/
+artifacts/
+
+# Yerel sırlar ve veriler
+.env
+.env.*
+!.env.example
+**/appsettings.Local.json
+**/appsettings.*.Local.json
+*.bak
+*.mdf
+*.ldf
+*.db
+*.db-shm
+*.db-wal
