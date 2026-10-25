@@ -1,43 +1,151 @@
+@model OCSTS.Models.DashboardViewModel
 @{
     ViewData["Title"] = "Ana Sayfa";
 }
 
-<!-- Karşılama Kartı -->
-<div class="card shadow-sm border-0 mb-4 bg-primary text-white p-4 rounded-3">
-    <div class="card-body">
-        <h1 class="display-6 fw-bold">🎓 SSET'e Hoş Geldiniz</h1>
-        <p class="lead mb-0">@ViewBag.Message</p>
-    </div>
-</div>
+@* ============================================================================
+   [KISIM 2 İSTERİ] - PARTIALVIEW KULLANIMI (_AlertMessagePartial)
+   Kullanıcı bir formdan veri kaydettiğinde yönlendirilen sayfada bildirim gösterir.
+   ============================================================================ *@
+@await Html.PartialAsync("_AlertMessagePartial")
 
-<!-- Responsive 2 Kolonlu Kart Yapısı -->
-<div class="row g-4">
-    <!-- Kart 1: Sınav Takibi Modülü -->
-    <div class="col-12 col-md-6">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-header bg-white fw-bold text-primary">
-                <i class="bi bi-journal-check me-1"></i> Sınav Takip Modülü
+<!-- HERO KARŞILAMA ALANI (Sunum Vizyonu: Tek bir yerden planla, takip et, düzenle) -->
+<section class="ocsts-hero p-4 p-lg-5 mb-4">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-8">
+            <div class="ocsts-hero-pill mb-3">
+                <i class="bi bi-stars text-warning"></i>
+                <span>ASP.NET Core MVC • Model • View • Controller</span>
             </div>
-            <div class="card-body">
-                <p class="text-muted">Yaklaşan sınavlarınızı, sınav tarihlerini ve hedeflediğiniz notları takip edin.</p>
-                <a asp-controller="Exam" asp-action="Index" class="btn btn-primary">
-                    Sınav Listesine Git &rarr;
+            <h1 class="display-6 fw-extrabold mb-3">
+                Tek bir yerden planla, takip et, düzenle.
+            </h1>
+            <p class="lead mb-4" style="color: rgba(255, 255, 255, 0.85); font-size: 1.05rem;">
+                <strong>OCSTS (Öğrenci Çalışma ve Sınav Takip Sistemi)</strong>; dağınık ders notlarını, yaklaşan sınav tarihlerini, hedef puanları ve çalışma sürelerini tek bir modern merkezde birleştirir.
+            </p>
+            <div class="d-flex flex-wrap gap-2">
+                <a asp-controller="Exam" asp-action="Create" class="btn btn-light fw-bold px-4 py-2 text-primary rounded-3 shadow-sm">
+                    <i class="bi bi-plus-circle-fill me-1"></i>Yeni Sınav Planla
                 </a>
+                <a asp-controller="StudyPlan" asp-action="Create" class="btn btn-outline-light fw-semibold px-4 py-2 rounded-3">
+                    <i class="bi bi-journal-plus me-1"></i>Çalışma Konusu Ekle
+                </a>
+                <a asp-controller="Home" asp-action="About" class="btn btn-link text-white text-decoration-none fw-semibold px-3 py-2">
+                    Proje Mimarisi <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-4 d-none d-lg-block">
+            <div class="p-4 rounded-4" style="background: rgba(255, 255, 255, 0.10); border: 1px solid rgba(255, 255, 255, 0.18);">
+                <div class="small text-uppercase fw-bold mb-3" style="color: rgba(255,255,255,0.75); letter-spacing: 0.05em;">
+                    Çözülen Temel Problemler
+                </div>
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <span class="badge rounded-pill bg-white text-primary fw-bold">01</span>
+                    <span class="small">Dağınık sınav ve konu bilgilerini tek listede toplar</span>
+                </div>
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <span class="badge rounded-pill bg-white text-primary fw-bold">02</span>
+                    <span class="small">Tarih, hedef puan ve çalışma saatini netleştirir</span>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="badge rounded-pill bg-white text-primary fw-bold">03</span>
+                    <span class="small">Tamamlanan ve bekleyen görevlere tam görünürlük sağlar</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@* ============================================================================
+   [KISIM 2 İSTERİ] - VIEWCOMPONENT ÇAĞRISI (Senaryo 1: Ana Sayfa Tam Özet)
+   AcademicSummaryViewComponent kendi C# Invoke() metodunu çalıştırarak sınav ve
+   çalışma planı istatistiklerini hesaplar ve "full" modunda 4'lü KPI kartları üretir.
+   ============================================================================ *@
+@await Component.InvokeAsync("AcademicSummary", new { mode = "full" })
+
+<!-- SAYFALAR ARASI VERİ VİTRİNİ (Create sayfalarından girilen veriler burada da doğrudan görünür) -->
+<div class="row g-4">
+    <!-- MODÜL 01: SINAV YÖNETİMİ ÖZETİ -->
+    <div class="col-lg-6">
+        <div class="card border-0 h-100">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <span class="badge ocsts-badge-soft-primary mb-1">Modül 01</span>
+                        <h5 class="fw-bold mb-0">Sınav Takvimi ve Hedefler</h5>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a asp-controller="Exam" asp-action="Create" class="btn btn-sm btn-ocsts-primary">
+                            <i class="bi bi-plus-lg"></i> Ekle
+                        </a>
+                        <a asp-controller="Exam" asp-action="Index" class="btn btn-sm btn-outline-secondary rounded-3">
+                            Tümünü Gör
+                        </a>
+                    </div>
+                </div>
+
+                @if (Model.UpcomingAndRecentExams.Count == 0)
+                {
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-calendar-x fs-2 d-block mb-2"></i>
+                        Henüz sınav eklenmemiş.
+                    </div>
+                }
+                else
+                {
+                    @* ====================================================================
+                       [KISIM 2 İSTERİ] - PARTIALVIEW ÇAĞRISI (_ExamCardPartial)
+                       Sınav Ekle (/Exam/Create) sayfasından HtmlHelpers ile girilen her sınav
+                       burada PartialView kullanılarak doğrudan listelenir.
+                       ==================================================================== *@
+                    @foreach (var exam in Model.UpcomingAndRecentExams.Take(4))
+                    {
+                        @await Html.PartialAsync("_ExamCardPartial", exam)
+                    }
+                }
             </div>
         </div>
     </div>
 
-    <!-- Kart 2: Çalışma Planı Modülü -->
-    <div class="col-12 col-md-6">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-header bg-white fw-bold text-success">
-                <i class="bi bi-calendar-check me-1"></i> Ders Çalışma Planı
-            </div>
-            <div class="card-body">
-                <p class="text-muted">Haftalık çalışmanız gereken konuları, süreleri ve tamamlama durumlarını planlayın.</p>
-                <a asp-controller="StudyPlan" asp-action="Index" class="btn btn-success">
-                    Çalışma Planına Git &rarr;
-                </a>
+    <!-- MODÜL 02: ÇALIŞMA PLANI ÖZETİ -->
+    <div class="col-lg-6">
+        <div class="card border-0 h-100">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <span class="badge bg-success-subtle text-success-emphasis mb-1">Modül 02</span>
+                        <h5 class="fw-bold mb-0">Çalışma Planı ve İlerleme</h5>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a asp-controller="StudyPlan" asp-action="Create" class="btn btn-sm btn-success rounded-3 fw-semibold">
+                            <i class="bi bi-plus-lg"></i> Ekle
+                        </a>
+                        <a asp-controller="StudyPlan" asp-action="Index" class="btn btn-sm btn-outline-secondary rounded-3">
+                            Tümünü Gör
+                        </a>
+                    </div>
+                </div>
+
+                @if (Model.StudyPlans.Count == 0)
+                {
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-journal-x fs-2 d-block mb-2"></i>
+                        Henüz çalışma konusu eklenmemiş.
+                    </div>
+                }
+                else
+                {
+                    @* ====================================================================
+                       [KISIM 2 İSTERİ] - PARTIALVIEW ÇAĞRISI (_StudyPlanCardPartial)
+                       Konu Ekle (/StudyPlan/Create) sayfasından HtmlHelpers ile girilen her
+                       çalışma konusu burada PartialView ile doğrudan gösterilir.
+                       ==================================================================== *@
+                    @foreach (var plan in Model.StudyPlans.Take(4))
+                    {
+                        @await Html.PartialAsync("_StudyPlanCardPartial", plan)
+                    }
+                }
             </div>
         </div>
     </div>

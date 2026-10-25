@@ -1,0 +1,42 @@
+[
+  {
+    "Id": 1,
+    "CourseName": "Web Programlama",
+    "TopicTitle": "MVC Mimarisi ve Controller",
+    "PlannedHours": 4,
+    "CompletedHours": 4,
+    "IsCompleted": true
+  },
+  {
+    "Id": 2,
+    "CourseName": "Web Programlama",
+    "TopicTitle": "Razor Syntax ve @foreach",
+    "PlannedHours": 3,
+    "CompletedHours": 3,
+    "IsCompleted": true
+  },
+  {
+    "Id": 3,
+    "CourseName": "Veri Taban\u0131",
+    "TopicTitle": "SQL Sorgular\u0131 ve Normalizasyon",
+    "PlannedHours": 5,
+    "CompletedHours": 2,
+    "IsCompleted": false
+  },
+  {
+    "Id": 4,
+    "CourseName": "Algoritmalar",
+    "TopicTitle": "S\u0131ralama ve Arama Algoritmalar\u0131",
+    "PlannedHours": 4,
+    "CompletedHours": 0,
+    "IsCompleted": false
+  },
+  {
+    "Id": 5,
+    "CourseName": "\u0130ngilizce I",
+    "TopicTitle": "UNIT 9",
+    "PlannedHours": 4,
+    "CompletedHours": 0,
+    "IsCompleted": false
+  }
+]

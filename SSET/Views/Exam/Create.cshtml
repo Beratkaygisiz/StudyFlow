@@ -1,46 +1,160 @@
-@model SSET.Models.Exam
-
+@model OCSTS.Models.Exam
 @{
     ViewData["Title"] = "Yeni Sınav Ekle";
+    var existingExams = ViewBag.ExistingExams as List<OCSTS.Models.Exam> ?? new List<OCSTS.Models.Exam>();
 }
 
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <!-- Form Kartı -->
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-primary text-white fw-bold">
-                <i class="bi bi-pencil-square me-1"></i> Yeni Sınav Ekle
+<!-- SAYFA ÜST BAŞLIĞI -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 ocsts-page-header">
+    <div>
+        <span class="badge ocsts-badge-soft-primary mb-2">Modül 01 • HtmlHelpers Form Girişi</span>
+        <h2 class="fw-bold mb-1">Yeni Sınav Planla</h2>
+        <p class="text-muted mb-0">
+            Bu sayfadaki form elemanları <code>HtmlHelpers</code> ile oluşturulmuştur. Kaydettiğiniz sınav bilgilerine <strong>Sınav Yönetimi</strong> ve <strong>Ana Sayfa</strong> üzerinden doğrudan erişebilirsiniz.
+        </p>
+    </div>
+    <div>
+        <a asp-controller="Exam" asp-action="Index" class="btn btn-outline-secondary rounded-3">
+            <i class="bi bi-arrow-left me-1"></i>Sınav Listesine Dön
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- SOL SÜTUN: HTMLHELPERS İLE YENİ SINAV EKLEME FORMU -->
+    <div class="col-lg-7">
+        <div class="card border-0">
+            <div class="card-body p-4 p-md-5">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="ocsts-icon-box bg-primary bg-opacity-10 text-primary">
+                        <i class="bi bi-calendar-plus-fill"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold mb-0">Sınav Bilgileri Formu</h5>
+                        <span class="small text-muted">Html.BeginForm, LabelFor, TextBoxFor, DropDownListFor, TextAreaFor</span>
+                    </div>
+                </div>
+
+                @* ============================================================================
+                   [KISIM 2 İSTERİ] - HTMLHELPERS İLE FORM ELEMANLARININ OLUŞTURULMASI
+                   Tag Helper (<form asp-...>, <input asp-for=...>) yerine tamamen
+                   ASP.NET Core MVC HtmlHelpers metotları kullanılmıştır:
+                   - Html.BeginForm       : <form action="/Exam/Create" method="post"> üretir
+                   - Html.LabelFor        : Modeldeki [Display(Name=...)] etiketini üretir
+                   - Html.TextBoxFor      : Model özelliğine bağlı <input> üretir
+                   - Html.DropDownListFor : Seçenek listesine bağlı <select> üretir
+                   - Html.TextAreaFor     : Çok satırlı açıklama alanı (<textarea>) üretir
+                   ============================================================================ *@
+                @using (Html.BeginForm("Create", "Exam", FormMethod.Post, new { autocomplete = "off" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger small py-2" })
+
+                    <div class="row g-3">
+                        <!-- 1. Ders Adı (Html.LabelFor + Html.TextBoxFor) -->
+                        <div class="col-md-8">
+                            @Html.LabelFor(m => m.CourseName, new { @class = "form-label fw-semibold" })
+                            @Html.TextBoxFor(m => m.CourseName, new
+                            {
+                                @class = "form-control",
+                                placeholder = "Örn: Web Programlama",
+                                required = "required"
+                            })
+                            @Html.ValidationMessageFor(m => m.CourseName, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <!-- 2. Sınav Türü (Html.LabelFor + Html.DropDownListFor) -->
+                        <div class="col-md-4">
+                            @Html.LabelFor(m => m.ExamType, new { @class = "form-label fw-semibold" })
+                            @Html.DropDownListFor(
+                                m => m.ExamType,
+                                ViewBag.ExamTypes as IEnumerable<SelectListItem>,
+                                new { @class = "form-select" }
+                            )
+                        </div>
+
+                        <!-- 3. Sınav Tarihi ve Saati (Html.LabelFor + Html.TextBoxFor datetime-local) -->
+                        <div class="col-md-6">
+                            @Html.LabelFor(m => m.ExamDate, new { @class = "form-label fw-semibold" })
+                            @Html.TextBoxFor(m => m.ExamDate, "{0:yyyy-MM-ddTHH:mm}", new
+                            {
+                                type = "datetime-local",
+                                @class = "form-control",
+                                required = "required"
+                            })
+                        </div>
+
+                        <!-- 4. Hedeflenen Not (Html.LabelFor + Html.TextBoxFor number) -->
+                        <div class="col-md-6">
+                            @Html.LabelFor(m => m.TargetScore, new { @class = "form-label fw-semibold" })
+                            @Html.TextBoxFor(m => m.TargetScore, new
+                            {
+                                type = "number",
+                                min = "0",
+                                max = "100",
+                                @class = "form-control",
+                                placeholder = "Örn: 90",
+                                required = "required"
+                            })
+                        </div>
+
+                        <!-- 5. Kısa Açıklama / Kapsam (Html.LabelFor + Html.TextAreaFor) -->
+                        <div class="col-12">
+                            @Html.LabelFor(m => m.Description, new { @class = "form-label fw-semibold" })
+                            @Html.TextAreaFor(m => m.Description, 3, 40, new
+                            {
+                                @class = "form-control",
+                                placeholder = "Örn: MVC Mimarisi, Razor Syntax, ViewComponent ve PartialView konuları dahil"
+                            })
+                        </div>
+
+                        <div class="col-12 pt-2 d-flex flex-wrap gap-2">
+                            <button type="submit" class="btn btn-ocsts-primary px-4 py-2">
+                                <i class="bi bi-check2-circle me-1"></i>Sınavı Kaydet ve Listede Gör
+                            </button>
+                            <a asp-controller="Exam" asp-action="Index" class="btn btn-outline-secondary rounded-3 px-4 py-2">
+                                İptal
+                            </a>
+                        </div>
+                    </div>
+                }
             </div>
+        </div>
+    </div>
+
+    <!-- SAĞ SÜTUN: PARTIALVIEW İLE MEVCUT SINAV TAKVİMİ ÖNİZLEMESİ -->
+    <div class="col-lg-5">
+        <div class="card border-0 h-100">
             <div class="card-body p-4">
-                <form asp-controller="Exam" asp-action="Create" method="post">
-                    
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Ders Adı</label>
-                        <input asp-for="CourseName" class="form-control" placeholder="Örn: Web Programlama" required />
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <span class="badge bg-info-subtle text-info-emphasis mb-1">PartialView Önizlemesi</span>
+                        <h5 class="fw-bold mb-0">Mevcut Sınav Takvimim</h5>
                     </div>
+                    <span class="badge ocsts-badge-soft-primary">@existingExams.Count Kayıt</span>
+                </div>
+                <p class="small text-muted mb-3">
+                    Yeni sınav tarihi belirlerken çakışma yaşamamanız için mevcut sınavlarınız <code>_ExamCardPartial</code> bileşeni ile aşağıda listelenmektedir:
+                </p>
 
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Sınav Tarihi</label>
-                            <input asp-for="ExamDate" type="datetime-local" class="form-control" required />
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Hedeflenen Not (0-100)</label>
-                            <input asp-for="TargetScore" type="number" min="0" max="100" class="form-control" placeholder="Örn: 85" required />
-                        </div>
+                @if (existingExams.Count == 0)
+                {
+                    <div class="text-center py-4 text-muted small">
+                        Henüz planlanmış sınav bulunmuyor.
                     </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Açıklama / Not</label>
-                        <input asp-for="Description" class="form-control" placeholder="Örn: Vize 1 - İlk 4 ünite" />
-                    </div>
-
-                    <div class="d-flex justify-content-end gap-2 mt-4">
-                        <a asp-controller="Exam" asp-action="Index" class="btn btn-outline-secondary">Vazgeç</a>
-                        <button type="submit" class="btn btn-primary fw-semibold">Sınavı Kaydet</button>
-                    </div>
-
-                </form>
+                }
+                else
+                {
+                    @* ====================================================================
+                       [KISIM 2 İSTERİ] - PARTIALVIEW FARKLI SAYFADA KULLANIM SENARYOSU
+                       Ana Sayfada kullanılan "_ExamCardPartial" bileşeni, burada da öğrencinin
+                       yeni sınav eklerken mevcut takvimini görmesi amacıyla tekrar kullanılmıştır.
+                       ==================================================================== *@
+                    @foreach (var item in existingExams.Take(5))
+                    {
+                        @await Html.PartialAsync("_ExamCardPartial", item)
+                    }
+                }
             </div>
         </div>
     </div>

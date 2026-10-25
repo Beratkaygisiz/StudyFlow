@@ -1,4 +1,4 @@
-namespace SSET.Models;
+namespace OCSTS.Models;
 
 public class ErrorViewModel
 {

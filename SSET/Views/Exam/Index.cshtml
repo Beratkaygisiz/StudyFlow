@@ -1,61 +1,184 @@
-@*
-    DİNAMİK RAZOR SAYFASI (Strongly Typed View):
-    Controller'dan gönderilen List<Exam> listesi model olarak yakalanır.
-*@
-@model List<SSET.Models.Exam>
-
+@model List<OCSTS.Models.Exam>
 @{
-    ViewData["Title"] = "Sınav Listesi";
+    ViewData["Title"] = "Sınav Yönetimi";
 }
 
-<!-- Başlık ve Yeni Ekleme Butonu -->
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 class="fw-bold text-dark mb-0">
-        <i class="bi bi-journal-check text-primary me-2"></i>Sınav Takip Listesi
-    </h3>
-    <a asp-controller="Exam" asp-action="Create" class="btn btn-primary">
-        <i class="bi bi-plus-circle me-1"></i> + Yeni Sınav Ekle
-    </a>
+<!-- SAYFA ÜST BAŞLIĞI -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 ocsts-page-header">
+    <div>
+        <span class="badge ocsts-badge-soft-primary mb-2">Modül 01 • Sınav Yönetimi</span>
+        <h2 class="fw-bold mb-1">Sınav Takip Listesi</h2>
+        <p class="text-muted mb-0">
+            Yeni Sınav Ekle sayfasından girdiğiniz sınavlar burada doğrudan listelenir; tarihi geçen sınavların gerçek notlarını kaydedebilirsiniz.
+        </p>
+    </div>
+    <div class="flex-shrink-0">
+        <a asp-controller="Exam" asp-action="Create" class="btn btn-ocsts-primary px-4 py-2 shadow-sm">
+            <i class="bi bi-plus-circle me-1"></i>Yeni Sınav Ekle
+        </a>
+    </div>
 </div>
 
-<!-- ========================================================================== -->
-<!-- ZORUNLU İSTER: RAZOR DİNAMİK ALAN (KART İÇİNDE HTML TABLOSU)               -->
-<!-- ========================================================================== -->
-<div class="card shadow-sm border-0">
-    <div class="card-header bg-white fw-bold text-secondary">
-        Kayıtlı Sınavlar (Toplam: @Model.Count)
-    </div>
+@* ============================================================================
+   [KISIM 2 İSTERİ] - PARTIALVIEW ÇAĞRISI (_AlertMessagePartial)
+   Create sayfasından yönlendirildiğinde başarı mesajını gösterir.
+   ============================================================================ *@
+@await Html.PartialAsync("_AlertMessagePartial")
+
+@* ============================================================================
+   [KISIM 2 İSTERİ] - VIEWCOMPONENT ÇAĞRISI (Senaryo 2: Sınav Odaklı KPI Şeridi)
+   Aynı AcademicSummaryViewComponent burada "exams" parametresi ile çağrılarak
+   sadece sınav istatistiklerini (Toplam, Yaklaşan, Not Bekleyen, Ortalama) gösterir.
+   ============================================================================ *@
+@await Component.InvokeAsync("AcademicSummary", new { mode = "exams" })
+
+<!-- DİNAMİK SINAV TABLOSU -->
+<div class="card border-0 overflow-hidden">
     <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th style="width: 50px;">#</th>
-                        <th>Ders Adı</th>
-                        <th>Sınav Tarihi</th>
-                        <th>Hedeflenen Not</th>
-                        <th>Açıklama</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @* 
-                        RAZOR DİNAMİK FOREACH DÖNGÜSÜ:
-                        Controller'dan gelen her bir sınav için bir HTML satırı (<tr>) basılır.
-                    *@
-                    @foreach (var exam in Model)
-                    {
+        @if (Model.Count == 0)
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-calendar2-plus fs-1 text-muted d-block mb-2"></i>
+                <h5 class="fw-bold">Henüz kayıtlı bir sınav bulunmuyor</h5>
+                <p class="text-muted small mb-3">İlk sınavınızı ekleyerek hedef puan ve tarih takibine başlayın.</p>
+                <a asp-controller="Exam" asp-action="Create" class="btn btn-ocsts-primary">Sınav Ekle</a>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table ocsts-table mb-0 align-middle">
+                    <thead>
                         <tr>
-                            <td class="fw-bold text-muted">@exam.Id</td>
-                            <td><strong>@exam.CourseName</strong></td>
-                            <td>@exam.ExamDate.ToString("dd.MM.yyyy HH:mm")</td>
-                            <td>
-                                <span class="badge bg-success fs-6">@exam.TargetScore / 100</span>
-                            </td>
-                            <td class="text-muted">@exam.Description</td>
+                            <th>Ders & Sınav Türü</th>
+                            <th>Tarih & Saat</th>
+                            <th class="text-center">Hedef Not</th>
+                            <th>Durum / Alınan Not</th>
+                            <th>Kapsam Notu</th>
+                            <th class="text-end">İşlem</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        @foreach (var exam in Model)
+                        {
+                            bool isPast = exam.ExamDate < DateTime.Now;
+                            int daysLeft = (exam.ExamDate.Date - DateTime.Now.Date).Days;
+                            string typeBadge = exam.ExamType switch
+                            {
+                                "Final" => "bg-danger-subtle text-danger-emphasis",
+                                "Quiz" => "bg-info-subtle text-info-emphasis",
+                                "Proje / Ödev" => "bg-secondary-subtle text-secondary-emphasis",
+                                _ => "ocsts-badge-soft-primary"
+                            };
+
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">@exam.CourseName</div>
+                                    <span class="badge @typeBadge mt-1">@(string.IsNullOrWhiteSpace(exam.ExamType) ? "Vize" : exam.ExamType)</span>
+                                </td>
+                                <td>
+                                    <div class="fw-medium">
+                                        <i class="bi bi-calendar-event text-primary me-1"></i>@exam.ExamDate.ToString("dd.MM.yyyy")
+                                    </div>
+                                    <div class="small text-muted">
+                                        <i class="bi bi-clock me-1"></i>@exam.ExamDate.ToString("HH:mm")
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge ocsts-badge-soft-primary fs-6 px-3 py-2">@exam.TargetScore</span>
+                                </td>
+                                <td>
+                                    @if (!isPast)
+                                    {
+                                        <span class="badge bg-info-subtle text-info-emphasis px-3 py-2">
+                                            <i class="bi bi-hourglass-top me-1"></i>@(daysLeft == 0 ? "Bugün!" : $"{daysLeft} gün kaldı")
+                                        </span>
+                                    }
+                                    else if (exam.ActualScore.HasValue)
+                                    {
+                                        bool reachedTarget = exam.ActualScore.Value >= exam.TargetScore;
+                                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                                            <span class="badge @(reachedTarget ? "bg-success-subtle text-success-emphasis" : "bg-primary-subtle text-primary-emphasis") px-3 py-2">
+                                                <i class="bi @(reachedTarget ? "bi-trophy-fill" : "bi-check-circle-fill") me-1"></i>Not: @exam.ActualScore / 100
+                                            </span>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary rounded-3 py-1 px-2"
+                                                    data-bs-toggle="modal" data-bs-target="#scoreModal-@exam.Id" title="Notu Düzenle">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="btn btn-sm btn-warning fw-semibold rounded-3 shadow-sm"
+                                                data-bs-toggle="modal" data-bs-target="#scoreModal-@exam.Id">
+                                            <i class="bi bi-pencil-square me-1"></i>Sınav Notu Gir
+                                        </button>
+                                    }
+                                </td>
+                                <td class="text-muted small" style="max-width: 240px;">
+                                    @(string.IsNullOrWhiteSpace(exam.Description) ? "—" : exam.Description)
+                                </td>
+                                <td class="text-end">
+                                    <a asp-controller="Exam" asp-action="Delete" asp-route-id="@exam.Id"
+                                       class="btn btn-sm btn-outline-danger rounded-3"
+                                       onclick="return confirm('@exam.CourseName sınav kaydını silmek istediğinize emin misiniz?');"
+                                       title="Sınavı Sil">
+                                        <i class="bi bi-trash3"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
     </div>
 </div>
+
+@* TARİHİ GEÇMİŞ SINAVLAR İÇİN NOT GİRME MODALLARI (HtmlHelpers ile oluşturulmuş form) *@
+@foreach (var exam in Model.Where(e => e.ExamDate < DateTime.Now))
+{
+    <div class="modal fade" id="scoreModal-@exam.Id" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 shadow">
+                <div class="modal-header border-bottom-0 pb-0">
+                    <div>
+                        <span class="badge ocsts-badge-soft-primary mb-1">@exam.ExamType</span>
+                        <h5 class="modal-title fw-bold">@exam.CourseName — Not Girişi</h5>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                </div>
+
+                @* [KISIM 2 İSTERİ] - HTMLHELPERS İLE FORM OLUŞTURMA *@
+                @using (Html.BeginForm("UpdateScore", "Exam", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.Hidden("id", exam.Id)
+
+                    <div class="modal-body py-3">
+                        <p class="small text-muted mb-3">
+                            Bu sınav için belirlediğiniz hedef puan: <strong>@exam.TargetScore</strong>. Aldığınız gerçek sınav puanını aşağıya giriniz:
+                        </p>
+                        <div class="mb-2">
+                            @Html.Label("actualScore_" + exam.Id, "Alınan Gerçek Not (0 - 100)", new { @class = "form-label fw-semibold" })
+                            @Html.TextBox("actualScore", exam.ActualScore, new
+                            {
+                                id = "actualScore_" + exam.Id,
+                                type = "number",
+                                min = "0",
+                                max = "100",
+                                @class = "form-control form-control-lg",
+                                placeholder = "Örn: 90",
+                                required = "required"
+                            })
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top-0 pt-0">
+                        <button type="button" class="btn btn-outline-secondary rounded-3" data-bs-dismiss="modal">Vazgeç</button>
+                        <button type="submit" class="btn btn-ocsts-primary px-4">Notu Kaydet</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}

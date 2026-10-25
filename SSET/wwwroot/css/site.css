@@ -1,40 +1,341 @@
 /* ==========================================================================
-   SSET - Özel CSS Stilleri
-   Düz beyaz ekran olmaması için arka plan ve kart tasarımları
+   OCSTS — Öğrenci Çalışma ve Sınav Takip Sistemi (Kısım 2 Modern UI Tasarımı)
+   Açık Mod (Light) ve Koyu Mod (Dark) tam uyumlu modern değişken tabanlı CSS
    ========================================================================== */
 
-/* Sayfa Genel Görünümü */
+:root {
+    --ocsts-bg: #f4f7fb;
+    --ocsts-surface: #ffffff;
+    --ocsts-surface-alt: #f8fafc;
+    --ocsts-border: #e2e8f0;
+    --ocsts-text: #0f172a;
+    --ocsts-text-muted: #64748b;
+    --ocsts-primary: #4f46e5;
+    --ocsts-primary-hover: #4338ca;
+    --ocsts-primary-soft: rgba(79, 70, 229, 0.10);
+    --ocsts-hero-gradient: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+    --ocsts-nav-bg: rgba(255, 255, 255, 0.88);
+    --ocsts-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+    --ocsts-shadow-hover: 0 12px 28px rgba(15, 23, 42, 0.09);
+}
+
+[data-bs-theme="dark"] {
+    --ocsts-bg: #0b1120;
+    --ocsts-surface: #131c31;
+    --ocsts-surface-alt: #19253f;
+    --ocsts-border: #263554;
+    --ocsts-text: #f1f5f9;
+    --ocsts-text-muted: #94a3b8;
+    --ocsts-primary: #6366f1;
+    --ocsts-primary-hover: #818cf8;
+    --ocsts-primary-soft: rgba(99, 102, 241, 0.18);
+    --ocsts-hero-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 55%, #312e81 100%);
+    --ocsts-nav-bg: rgba(19, 28, 49, 0.90);
+    --ocsts-shadow: 0 6px 24px rgba(0, 0, 0, 0.30);
+    --ocsts-shadow-hover: 0 14px 32px rgba(0, 0, 0, 0.45);
+}
+
+html {
+    font-size: 15.5px;
+    scroll-behavior: smooth;
+}
+
 body {
-    /* Düz beyaz ekranı kırmak için modern ve göz yormayan yumuşak arka plan */
-    background-color: #f4f6fa;
-    color: #333333;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    margin-bottom: 60px;
+    font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: var(--ocsts-bg);
+    color: var(--ocsts-text);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* Bootstrap Kart (Card) Yapıları */
-.card {
+main {
+    flex: 1;
+}
+
+/* Navbar (Cam Efektli Modern Üst Menü) */
+.ocsts-navbar {
+    background: var(--ocsts-nav-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--ocsts-border);
+    padding-top: 0.7rem;
+    padding-bottom: 0.7rem;
+    transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.ocsts-brand-logo {
+    width: 38px;
+    height: 38px;
     border-radius: 10px;
-    background-color: #ffffff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    background: linear-gradient(135deg, #4f46e5, #06b6d4);
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
 }
 
-.card-header {
-    border-top-left-radius: 10px !important;
-    border-top-right-radius: 10px !important;
+.ocsts-nav-link {
+    color: var(--ocsts-text-muted) !important;
+    font-weight: 600;
+    font-size: 0.94rem;
+    padding: 0.5rem 0.9rem !important;
+    border-radius: 0.65rem;
+    transition: all 0.2s ease;
 }
 
-/* Tablolar */
-.table {
-    margin-bottom: 0;
-    vertical-align: middle;
+.ocsts-nav-link:hover {
+    color: var(--ocsts-text) !important;
+    background-color: var(--ocsts-surface-alt);
 }
 
-/* Alt Bilgi (Footer) */
-.footer {
+.ocsts-nav-link.active {
+    color: var(--ocsts-primary) !important;
+    background-color: var(--ocsts-primary-soft);
+}
+
+/* Tema Değiştirme Butonu */
+.theme-toggle-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 1px solid var(--ocsts-border);
+    background-color: var(--ocsts-surface-alt);
+    color: var(--ocsts-text);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.theme-toggle-btn:hover {
+    border-color: var(--ocsts-primary);
+    color: var(--ocsts-primary);
+    transform: translateY(-1px);
+}
+
+/* Birincil Butonlar */
+.btn-ocsts-primary {
+    background-color: var(--ocsts-primary);
+    border-color: var(--ocsts-primary);
+    color: #ffffff;
+    font-weight: 600;
+    border-radius: 0.65rem;
+    transition: all 0.2s ease;
+}
+
+.btn-ocsts-primary:hover {
+    background-color: var(--ocsts-primary-hover);
+    border-color: var(--ocsts-primary-hover);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+/* Hero Alanı */
+.ocsts-hero {
+    background: var(--ocsts-hero-gradient);
+    color: #ffffff;
+    border-radius: 1.25rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 14px 34px rgba(30, 27, 75, 0.22);
+}
+
+.ocsts-hero::after {
+    content: "";
     position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 55px;
-    line-height: 55px;
+    top: -60px;
+    right: -60px;
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.35) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.ocsts-hero-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+/* Kartlar ve Yüzeyler */
+.card,
+.ocsts-surface,
+.ocsts-stat-card {
+    background-color: var(--ocsts-surface);
+    border: 1px solid var(--ocsts-border) !important;
+    border-radius: 1rem;
+    box-shadow: var(--ocsts-shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.ocsts-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--ocsts-shadow-hover);
+}
+
+/* PartialView Kartları (_ExamCardPartial & _StudyPlanCardPartial) */
+.ocsts-item-card {
+    background-color: var(--ocsts-surface-alt);
+    border: 1px solid var(--ocsts-border);
+    transition: all 0.2s ease;
+}
+
+.ocsts-item-card:hover {
+    border-color: var(--ocsts-primary);
+    transform: translateX(3px);
+}
+
+/* İkon Kutuları */
+.ocsts-icon-box {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+/* Mini İstatistik Kutusu (Compact ViewComponent) */
+.ocsts-mini-stat {
+    background-color: var(--ocsts-surface-alt);
+    border: 1px solid var(--ocsts-border);
+    border-radius: 0.75rem;
+    padding: 0.6rem 1rem;
+    text-align: center;
+    min-width: 115px;
+}
+
+.ocsts-mini-stat-value {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.ocsts-mini-stat-label {
+    font-size: 0.75rem;
+    color: var(--ocsts-text-muted);
+}
+
+/* Yumuşak Rozetler */
+.ocsts-badge-soft-primary {
+    background-color: var(--ocsts-primary-soft);
+    color: var(--ocsts-primary);
+    font-weight: 600;
+}
+
+/* İlerleme Çubukları */
+.ocsts-progress {
+    height: 9px;
+    border-radius: 999px;
+    background-color: var(--ocsts-surface-alt);
+    overflow: hidden;
+}
+
+.ocsts-progress-sm {
+    height: 6px;
+    border-radius: 999px;
+    background-color: var(--ocsts-border);
+    overflow: hidden;
+}
+
+/* Modern Tablo Tasarımı */
+.ocsts-table thead th {
+    background-color: var(--ocsts-surface-alt);
+    color: var(--ocsts-text-muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--ocsts-border);
+    padding: 0.9rem 1rem;
+}
+
+.ocsts-table tbody td {
+    padding: 0.95rem 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--ocsts-border);
+}
+
+.ocsts-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.ocsts-table tbody tr:hover {
+    background-color: var(--ocsts-surface-alt);
+}
+
+/* Form Elemanları (HtmlHelpers ile üretilen input/select/textarea) */
+.form-control,
+.form-select {
+    background-color: var(--ocsts-surface-alt);
+    border: 1px solid var(--ocsts-border);
+    color: var(--ocsts-text);
+    border-radius: 0.65rem;
+    padding: 0.6rem 0.9rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--ocsts-surface);
+    border-color: var(--ocsts-primary);
+    color: var(--ocsts-text);
+    box-shadow: 0 0 0 0.22rem var(--ocsts-primary-soft);
+}
+
+.hours-input {
+    width: 72px;
+    padding: 0.3rem 0.45rem;
+}
+
+/* Sayfa Başlık Şeridi */
+.ocsts-page-header {
+    padding-bottom: 0.5rem;
+}
+
+/* Slayt Adım Numarası Etiketi */
+.ocsts-step-num {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background-color: var(--ocsts-primary-soft);
+    color: var(--ocsts-primary);
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Footer */
+.ocsts-footer {
+    background-color: var(--ocsts-surface);
+    border-top: 1px solid var(--ocsts-border);
+    color: var(--ocsts-text-muted);
+    transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+[data-bs-theme="dark"] .modal-content {
+    background-color: var(--ocsts-surface);
+    border: 1px solid var(--ocsts-border);
+}
+
+[data-bs-theme="dark"] .text-muted {
+    color: var(--ocsts-text-muted) !important;
 }

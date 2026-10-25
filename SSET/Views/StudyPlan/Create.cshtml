@@ -1,50 +1,167 @@
-@model SSET.Models.StudyPlan
-
+@model OCSTS.Models.StudyPlan
 @{
-    ViewData["Title"] = "Yeni Konu Ekle";
+    ViewData["Title"] = "Yeni Çalışma Konusu Ekle";
+    var existingPlans = ViewBag.ExistingPlans as List<OCSTS.Models.StudyPlan> ?? new List<OCSTS.Models.StudyPlan>();
 }
 
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <!-- Form Kartı -->
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-success text-white fw-bold">
-                <i class="bi bi-bookmark-plus me-1"></i> Yeni Çalışma Konusu Ekle
-            </div>
-            <div class="card-body p-4">
-                <form asp-controller="StudyPlan" asp-action="Create" method="post">
-                    
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Ders Adı</label>
-                        <input asp-for="CourseName" class="form-control" placeholder="Örn: Web Programlama" required />
-                    </div>
+<!-- SAYFA ÜST BAŞLIĞI -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 ocsts-page-header">
+    <div>
+        <span class="badge bg-success-subtle text-success-emphasis mb-2">Modül 02 • HtmlHelpers Form Girişi</span>
+        <h2 class="fw-bold mb-1">Yeni Çalışma Konusu Planla</h2>
+        <p class="text-muted mb-0">
+            Bu sayfadaki form elemanları <code>HtmlHelpers</code> ile oluşturulmuştur. Kaydettiğiniz konulara <strong>Çalışma Planı</strong> ve <strong>Ana Sayfa</strong> üzerinden doğrudan ulaşabilirsiniz.
+        </p>
+    </div>
+    <div>
+        <a asp-controller="StudyPlan" asp-action="Index" class="btn btn-outline-secondary rounded-3">
+            <i class="bi bi-arrow-left me-1"></i>Çalışma Planına Dön
+        </a>
+    </div>
+</div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Çalışılacak Konu Başlığı</label>
-                        <input asp-for="TopicTitle" class="form-control" placeholder="Örn: Entity Framework Giriş" required />
+<div class="row g-4">
+    <!-- SOL SÜTUN: HTMLHELPERS İLE YENİ KONU EKLEME FORMU -->
+    <div class="col-lg-7">
+        <div class="card border-0">
+            <div class="card-body p-4 p-md-5">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="ocsts-icon-box bg-success bg-opacity-10 text-success">
+                        <i class="bi bi-journal-plus"></i>
                     </div>
+                    <div>
+                        <h5 class="fw-bold mb-0">Çalışma Konusu Formu</h5>
+                        <span class="small text-muted">Html.BeginForm, LabelFor, TextBoxFor, DropDownListFor, CheckBoxFor</span>
+                    </div>
+                </div>
 
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Hedef Süre (Saat)</label>
-                            <input asp-for="PlannedHours" type="number" min="1" max="50" class="form-control" placeholder="Örn: 3" required />
+                @* ============================================================================
+                   [KISIM 2 İSTERİ] - HTMLHELPERS İLE FORM ELEMANLARININ OLUŞTURULMASI
+                   - Html.BeginForm       : <form action="/StudyPlan/Create" method="post">
+                   - Html.LabelFor        : Model üzerindeki [Display] özniteliğinden etiket üretir
+                   - Html.TextBoxFor      : Metin ve sayısal <input> alanlarını üretir
+                   - Html.DropDownListFor : Öncelik düzeyi için <select> açılır listesi üretir
+                   - Html.CheckBoxFor     : Tamamlanma durumu için <input type="checkbox"> üretir
+                   ============================================================================ *@
+                @using (Html.BeginForm("Create", "StudyPlan", FormMethod.Post, new { autocomplete = "off" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger small py-2" })
+
+                    <div class="row g-3">
+                        <!-- 1. Ders Adı (Html.LabelFor + Html.TextBoxFor) -->
+                        <div class="col-md-7">
+                            @Html.LabelFor(m => m.CourseName, new { @class = "form-label fw-semibold" })
+                            @Html.TextBoxFor(m => m.CourseName, new
+                            {
+                                @class = "form-control",
+                                placeholder = "Örn: Web Programlama",
+                                required = "required"
+                            })
                         </div>
-                        <div class="col-md-6 d-flex align-items-center pt-md-4">
-                            <div class="form-check mt-2">
-                                <input asp-for="IsCompleted" class="form-check-input" type="checkbox" id="checkCompleted" />
-                                <label class="form-check-label fw-semibold" for="checkCompleted">
-                                    Konu Tamamlandı mı?
-                                </label>
+
+                        <!-- 2. Öncelik Düzeyi (Html.LabelFor + Html.DropDownListFor) -->
+                        <div class="col-md-5">
+                            @Html.LabelFor(m => m.Priority, new { @class = "form-label fw-semibold" })
+                            @Html.DropDownListFor(
+                                m => m.Priority,
+                                ViewBag.Priorities as IEnumerable<SelectListItem>,
+                                new { @class = "form-select" }
+                            )
+                        </div>
+
+                        <!-- 3. Çalışılacak Konu Başlığı (Html.LabelFor + Html.TextBoxFor) -->
+                        <div class="col-12">
+                            @Html.LabelFor(m => m.TopicTitle, new { @class = "form-label fw-semibold" })
+                            @Html.TextBoxFor(m => m.TopicTitle, new
+                            {
+                                @class = "form-control",
+                                placeholder = "Örn: MVC ViewComponent, PartialView ve HtmlHelpers",
+                                required = "required"
+                            })
+                        </div>
+
+                        <!-- 4. Hedeflenen Süre (Html.LabelFor + Html.TextBoxFor number) -->
+                        <div class="col-md-6">
+                            @Html.LabelFor(m => m.PlannedHours, new { @class = "form-label fw-semibold" })
+                            @Html.TextBoxFor(m => m.PlannedHours, new
+                            {
+                                type = "number",
+                                min = "1",
+                                max = "200",
+                                @class = "form-control",
+                                required = "required"
+                            })
+                        </div>
+
+                        <!-- 5. Şu Ana Kadar Çalışılan Süre (Html.LabelFor + Html.TextBoxFor number) -->
+                        <div class="col-md-6">
+                            @Html.LabelFor(m => m.CompletedHours, new { @class = "form-label fw-semibold" })
+                            @Html.TextBoxFor(m => m.CompletedHours, new
+                            {
+                                type = "number",
+                                min = "0",
+                                max = "200",
+                                @class = "form-control",
+                                required = "required"
+                            })
+                        </div>
+
+                        <!-- 6. Tamamlandı Kutucuğu (Html.CheckBoxFor + Html.LabelFor) -->
+                        <div class="col-12">
+                            <div class="form-check p-3 rounded-3" style="background-color: var(--ocsts-surface-alt); border: 1px solid var(--ocsts-border);">
+                                @Html.CheckBoxFor(m => m.IsCompleted, new { @class = "form-check-input ms-0 me-2" })
+                                @Html.LabelFor(m => m.IsCompleted, new { @class = "form-check-label small fw-medium" })
                             </div>
                         </div>
-                    </div>
 
-                    <div class="d-flex justify-content-end gap-2">
-                        <a asp-controller="StudyPlan" asp-action="Index" class="btn btn-outline-secondary">Vazgeç</a>
-                        <button type="submit" class="btn btn-success fw-semibold">Konuyu Kaydet</button>
+                        <div class="col-12 pt-2 d-flex flex-wrap gap-2">
+                            <button type="submit" class="btn btn-success rounded-3 fw-semibold px-4 py-2">
+                                <i class="bi bi-check2-circle me-1"></i>Konuyu Kaydet ve Planda Gör
+                            </button>
+                            <a asp-controller="StudyPlan" asp-action="Index" class="btn btn-outline-secondary rounded-3 px-4 py-2">
+                                İptal
+                            </a>
+                        </div>
                     </div>
+                }
+            </div>
+        </div>
+    </div>
 
-                </form>
+    <!-- SAĞ SÜTUN: PARTIALVIEW İLE MEVCUT ÇALIŞMA PLANLARI ÖNİZLEMESİ -->
+    <div class="col-lg-5">
+        <div class="card border-0 h-100">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <span class="badge bg-success-subtle text-success-emphasis mb-1">PartialView Önizlemesi</span>
+                        <h5 class="fw-bold mb-0">Mevcut Çalışma Konularım</h5>
+                    </div>
+                    <span class="badge ocsts-badge-soft-primary">@existingPlans.Count Konu</span>
+                </div>
+                <p class="small text-muted mb-3">
+                    Daha önce eklediğiniz çalışma konuları <code>_StudyPlanCardPartial</code> bileşeni ile aşağıda listelenmektedir:
+                </p>
+
+                @if (existingPlans.Count == 0)
+                {
+                    <div class="text-center py-4 text-muted small">
+                        Henüz çalışma konusu eklenmemiş.
+                    </div>
+                }
+                else
+                {
+                    @* ====================================================================
+                       [KISIM 2 İSTERİ] - PARTIALVIEW FARKLI SAYFADA KULLANIM SENARYOSU
+                       Ana Sayfada kullanılan "_StudyPlanCardPartial" bileşeni, burada da
+                       öğrencinin mevcut konularını görerek mükerrer kayıt girmesini önler.
+                       ==================================================================== *@
+                    @foreach (var item in existingPlans.Take(5))
+                    {
+                        @await Html.PartialAsync("_StudyPlanCardPartial", item)
+                    }
+                }
             </div>
         </div>
     </div>

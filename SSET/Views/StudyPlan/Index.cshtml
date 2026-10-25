@@ -1,68 +1,143 @@
-@*
-    ÇALIŞMA PLANI LİSTELEME SAYFASI:
-    Controller'dan gelen List<StudyPlan> modelini dinamik olarak listeler.
-*@
-@model List<SSET.Models.StudyPlan>
-
+@model List<OCSTS.Models.StudyPlan>
 @{
     ViewData["Title"] = "Çalışma Planı";
 }
 
-<!-- Başlık ve Yeni Ekleme Butonu -->
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 class="fw-bold text-dark mb-0">
-        <i class="bi bi-calendar-check text-success me-2"></i>Ders Çalışma Planı
-    </h3>
-    <a asp-controller="StudyPlan" asp-action="Create" class="btn btn-success">
-        <i class="bi bi-plus-circle me-1"></i> + Yeni Konu Ekle
-    </a>
+<!-- SAYFA ÜST BAŞLIĞI -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 ocsts-page-header">
+    <div>
+        <span class="badge bg-success-subtle text-success-emphasis mb-2">Modül 02 • Çalışma Planı</span>
+        <h2 class="fw-bold mb-1">Ders Çalışma Planı ve İlerleme</h2>
+        <p class="text-muted mb-0">
+            Yeni Konu Ekle sayfasından girdiğiniz çalışma hedefleri burada listelenir. Çalışılan süreyi güncellediğinizde hedefe ulaşan konular otomatik <strong>Tamamlandı</strong> olur.
+        </p>
+    </div>
+    <div class="flex-shrink-0">
+        <a asp-controller="StudyPlan" asp-action="Create" class="btn btn-success rounded-3 fw-semibold px-4 py-2 shadow-sm">
+            <i class="bi bi-journal-plus me-1"></i>Yeni Konu Ekle
+        </a>
+    </div>
 </div>
 
-<!-- ========================================================================== -->
-<!-- KART İÇİNDE DİNAMİK RAZOR TABLOSU                                         -->
-<!-- ========================================================================== -->
-<div class="card shadow-sm border-0">
-    <div class="card-header bg-white fw-bold text-secondary">
-        Haftalık Çalışma Konuları (Toplam: @Model.Count)
-    </div>
+@* ============================================================================
+   [KISIM 2 İSTERİ] - PARTIALVIEW ÇAĞRISI (_AlertMessagePartial)
+   ============================================================================ *@
+@await Html.PartialAsync("_AlertMessagePartial")
+
+@* ============================================================================
+   [KISIM 2 İSTERİ] - VIEWCOMPONENT ÇAĞRISI (Senaryo 3: Çalışma İlerleme Özeti)
+   AcademicSummaryViewComponent burada "study" modunda çağrılarak toplam konu,
+   harcanan saat ve genel ilerleme çubuğunu üretir.
+   ============================================================================ *@
+@await Component.InvokeAsync("AcademicSummary", new { mode = "study" })
+
+<!-- DİNAMİK ÇALIŞMA PLANI TABLOSU -->
+<div class="card border-0 overflow-hidden">
     <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th style="width: 50px;">#</th>
-                        <th>Ders Adı</th>
-                        <th>Çalışılacak Konu</th>
-                        <th>Hedef Süre</th>
-                        <th>Durum</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @* 
-                        RAZOR DİNAMİK FOREACH DÖNGÜSÜ:
-                        Controller'daki konuları tek tek tablo satırına dönüştürür.
-                    *@
-                    @foreach (var plan in Model)
-                    {
+        @if (Model.Count == 0)
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-journal-bookmark fs-1 text-muted d-block mb-2"></i>
+                <h5 class="fw-bold">Henüz çalışma konusu eklenmemiş</h5>
+                <p class="text-muted small mb-3">Sınavlarınıza hazırlık için ilk çalışma konunuzu ekleyin.</p>
+                <a asp-controller="StudyPlan" asp-action="Create" class="btn btn-success rounded-3">Konu Ekle</a>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table ocsts-table mb-0 align-middle">
+                    <thead>
                         <tr>
-                            <td class="fw-bold text-muted">@plan.Id</td>
-                            <td><span class="badge bg-light text-dark border">@plan.CourseName</span></td>
-                            <td><strong>@plan.TopicTitle</strong></td>
-                            <td>@plan.PlannedHours Saat</td>
-                            <td>
-                                @if (plan.IsCompleted)
-                                {
-                                    <span class="badge bg-success">Tamamlandı</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-warning text-dark">Devam Ediyor</span>
-                                }
-                            </td>
+                            <th>Ders & Öncelik</th>
+                            <th>Çalışılacak Konu Başlığı</th>
+                            <th class="text-center">Hedef Süre</th>
+                            <th>Çalışılan Süre Güncelle</th>
+                            <th>İlerleme & Durum</th>
+                            <th class="text-end">İşlem</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        @foreach (var plan in Model)
+                        {
+                            int percent = plan.PlannedHours > 0
+                                ? Math.Min(100, (int)Math.Round((double)plan.CompletedHours / plan.PlannedHours * 100))
+                                : (plan.IsCompleted ? 100 : 0);
+
+                            string priorityClass = plan.Priority switch
+                            {
+                                "Yüksek" => "bg-danger-subtle text-danger-emphasis",
+                                "Düşük" => "bg-secondary-subtle text-secondary-emphasis",
+                                _ => "bg-warning-subtle text-warning-emphasis"
+                            };
+
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">@plan.CourseName</div>
+                                    <span class="badge @priorityClass mt-1">@(string.IsNullOrWhiteSpace(plan.Priority) ? "Orta" : plan.Priority) Öncelik</span>
+                                </td>
+                                <td>
+                                    <span class="fw-medium">@plan.TopicTitle</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge ocsts-badge-soft-primary px-3 py-2">@plan.PlannedHours saat</span>
+                                </td>
+                                <td>
+                                    @* ================================================================
+                                       [KISIM 2 İSTERİ] - HTMLHELPERS İLE SATIR İÇİ SÜRE GÜNCELLEME FORMU
+                                       ================================================================ *@
+                                    @using (Html.BeginForm("UpdateHours", "StudyPlan", FormMethod.Post, new { @class = "d-inline-flex align-items-center gap-2" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        @Html.Hidden("id", plan.Id)
+                                        @Html.TextBox("completedHours", plan.CompletedHours, new
+                                        {
+                                            type = "number",
+                                            min = "0",
+                                            max = "500",
+                                            @class = "form-control form-control-sm text-center hours-input",
+                                            required = "required",
+                                            title = "Çalışılan saat"
+                                        })
+                                        <button type="submit" class="btn btn-sm btn-ocsts-primary px-2 py-1" title="Süreyi Kaydet">
+                                            <i class="bi bi-check-lg"></i>
+                                        </button>
+                                    }
+                                </td>
+                                <td style="min-width: 190px;">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        @if (plan.IsCompleted)
+                                        {
+                                            <span class="badge bg-success-subtle text-success-emphasis">
+                                                <i class="bi bi-check-circle-fill me-1"></i>Tamamlandı
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            int remaining = Math.Max(0, plan.PlannedHours - plan.CompletedHours);
+                                            <span class="badge bg-warning-subtle text-warning-emphasis">
+                                                <i class="bi bi-hourglass-split me-1"></i>@remaining saat kaldı
+                                            </span>
+                                        }
+                                        <span class="small text-muted fw-semibold">%@percent</span>
+                                    </div>
+                                    <div class="progress ocsts-progress-sm" role="progressbar" aria-valuenow="@percent" aria-valuemin="0" aria-valuemax="100">
+                                        <div class="progress-bar @(plan.IsCompleted ? "bg-success" : "bg-primary")" style="width: @percent%"></div>
+                                    </div>
+                                </td>
+                                <td class="text-end">
+                                    <a asp-controller="StudyPlan" asp-action="Delete" asp-route-id="@plan.Id"
+                                       class="btn btn-sm btn-outline-danger rounded-3"
+                                       onclick="return confirm('@plan.TopicTitle konusunu çalışma planından silmek istediğinize emin misiniz?');"
+                                       title="Konuyu Sil">
+                                        <i class="bi bi-trash3"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
     </div>
 </div>

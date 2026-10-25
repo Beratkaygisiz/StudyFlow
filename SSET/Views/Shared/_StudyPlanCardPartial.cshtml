@@ -1,0 +1,59 @@
+@model OCSTS.Models.StudyPlan
+
+@* ============================================================================
+   [KISIM 2 İSTERİ] - PARTIALVIEW TANIMI (_StudyPlanCardPartial.cshtml)
+   ----------------------------------------------------------------------------
+   Bu PartialView, kendisine gönderilen tek bir StudyPlan nesnesini ilerleme çubuğu
+   ve öncelik rozeti ile birlikte modern bir çalışma kartı olarak render eder.
+
+   Farklı Sayfalarda Kullanıldığı Senaryolar:
+   1. Home/Index.cshtml       -> Ana sayfadaki "Çalışma Planı Durumu" vitrininde.
+   2. StudyPlan/Create.cshtml -> Yeni çalışma konusu eklerken sağ taraftaki
+                                 "Mevcut Çalışma Konularım" önizleme listesinde.
+   ============================================================================ *@
+
+@{
+    int percent = Model.PlannedHours > 0
+        ? Math.Min(100, (int)Math.Round((double)Model.CompletedHours / Model.PlannedHours * 100))
+        : (Model.IsCompleted ? 100 : 0);
+
+    string priorityClass = Model.Priority switch
+    {
+        "Yüksek" => "bg-danger-subtle text-danger-emphasis",
+        "Düşük" => "bg-secondary-subtle text-secondary-emphasis",
+        _ => "bg-warning-subtle text-warning-emphasis"
+    };
+}
+
+<div class="ocsts-item-card p-3 rounded-3 mb-2">
+    <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+        <div class="overflow-hidden">
+            <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
+                <span class="badge @priorityClass">@(string.IsNullOrWhiteSpace(Model.Priority) ? "Orta" : Model.Priority) Öncelik</span>
+                <span class="fw-bold text-truncate">@Model.CourseName</span>
+            </div>
+            <div class="small text-muted text-truncate">
+                <i class="bi bi-bookmark-star me-1"></i>@Model.TopicTitle
+            </div>
+        </div>
+
+        <div class="flex-shrink-0">
+            @if (Model.IsCompleted)
+            {
+                <span class="badge bg-success-subtle text-success-emphasis">
+                    <i class="bi bi-check-circle-fill me-1"></i>Tamamlandı
+                </span>
+            }
+            else
+            {
+                <span class="badge ocsts-badge-soft-primary">
+                    @Model.CompletedHours / @Model.PlannedHours saat
+                </span>
+            }
+        </div>
+    </div>
+
+    <div class="progress ocsts-progress-sm" role="progressbar" aria-valuenow="@percent" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-bar @(Model.IsCompleted ? "bg-success" : "bg-primary")" style="width: @percent%"></div>
+    </div>
+</div>

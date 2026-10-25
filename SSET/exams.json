@@ -1,0 +1,38 @@
+[
+  {
+    "Id": 1,
+    "CourseName": "Web Programlama (Vize 1)",
+    "ExamType": "Vize",
+    "ExamDate": "2026-10-10T10:00:00",
+    "TargetScore": 85,
+    "ActualScore": null,
+    "Description": "Sınav tamamlandı, not girişi bekleniyor"
+  },
+  {
+    "Id": 2,
+    "CourseName": "Veri Tabanı (Quiz 1)",
+    "ExamType": "Quiz",
+    "ExamDate": "2026-10-05T14:30:00",
+    "TargetScore": 80,
+    "ActualScore": 88,
+    "Description": "SQL Sorguları Değerlendirildi"
+  },
+  {
+    "Id": 3,
+    "CourseName": "Algoritmalar (Final)",
+    "ExamType": "Final",
+    "ExamDate": "2026-10-25T11:00:00",
+    "TargetScore": 90,
+    "ActualScore": null,
+    "Description": "Graf Yapıları ve Ağaç Gezinme"
+  },
+  {
+    "Id": 4,
+    "CourseName": "Web Programlama",
+    "ExamType": "Vize",
+    "ExamDate": "2026-11-12T10:00:00",
+    "TargetScore": 90,
+    "ActualScore": null,
+    "Description": "MVC Mimarisi, ViewComponent, PartialView ve HtmlHelpers"
+  }
+]

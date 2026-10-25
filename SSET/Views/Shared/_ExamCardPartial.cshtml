@@ -1,0 +1,70 @@
+@model OCSTS.Models.Exam
+
+@* ============================================================================
+   [KISIM 2 İSTERİ] - PARTIALVIEW TANIMI (_ExamCardPartial.cshtml)
+   ----------------------------------------------------------------------------
+   PartialView Nedir ve Neden Kullanılır?
+   - Tekrar kullanılabilir küçük HTML/Razor arayüz parçacığıdır.
+   - Kendi başına C# Controller mantığı çalıştırmaz; çağrıldığı üst sayfadan
+     kendisine gönderilen "Exam" nesnesini (@model OCSTS.Models.Exam) şık bir kart
+     olarak ekrana çizer. Böylece kod tekrarı (DRY prensibi) önlenir.
+
+   Farklı Sayfalarda Kullanıldığı Senaryolar:
+   1. Home/Index.cshtml   -> Ana sayfadaki "Yaklaşan ve Son Sınavlar" vitrininde.
+   2. Exam/Create.cshtml  -> Yeni sınav ekleme formunun yanındaki "Mevcut Sınav Takvimi"
+                             panelinde (öğrencinin tarih çakışmalarını görmesi için).
+   ============================================================================ *@
+
+@{
+    bool isPast = Model.ExamDate < DateTime.Now;
+    int daysRemaining = (Model.ExamDate.Date - DateTime.Now.Date).Days;
+    string typeBadgeClass = Model.ExamType switch
+    {
+        "Final" => "bg-danger-subtle text-danger-emphasis",
+        "Quiz" => "bg-info-subtle text-info-emphasis",
+        "Proje / Ödev" => "bg-purple-subtle text-primary-emphasis",
+        _ => "ocsts-badge-soft-primary"
+    };
+}
+
+<div class="ocsts-item-card p-3 rounded-3 mb-2">
+    <div class="d-flex justify-content-between align-items-start gap-2">
+        <div class="overflow-hidden">
+            <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
+                <span class="badge @typeBadgeClass">@(string.IsNullOrWhiteSpace(Model.ExamType) ? "Vize" : Model.ExamType)</span>
+                <h6 class="fw-bold mb-0 text-truncate">@Model.CourseName</h6>
+            </div>
+            <div class="small text-muted d-flex flex-wrap align-items-center gap-3">
+                <span><i class="bi bi-calendar3 me-1"></i>@Model.ExamDate.ToString("dd.MM.yyyy HH:mm")</span>
+                <span><i class="bi bi-bullseye me-1"></i>Hedef: <strong>@Model.TargetScore</strong></span>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(Model.Description))
+            {
+                <div class="small text-muted mt-1 text-truncate">
+                    <i class="bi bi-chat-left-text me-1"></i>@Model.Description
+                </div>
+            }
+        </div>
+
+        <div class="text-end flex-shrink-0">
+            @if (!isPast)
+            {
+                <span class="badge bg-info-subtle text-info-emphasis">
+                    <i class="bi bi-clock me-1"></i>@(daysRemaining == 0 ? "Bugün" : $"{daysRemaining} gün kaldı")
+                </span>
+            }
+            else if (Model.ActualScore.HasValue)
+            {
+                <span class="badge bg-success-subtle text-success-emphasis">
+                    <i class="bi bi-award-fill me-1"></i>Not: @Model.ActualScore
+                </span>
+            }
+            else
+            {
+                <a asp-controller="Exam" asp-action="Index" class="badge bg-warning-subtle text-warning-emphasis text-decoration-none">
+                    <i class="bi bi-pencil-square me-1"></i>Not Bekliyor
+                </a>
+            }
+        </div>
+    </div>
+</div>
