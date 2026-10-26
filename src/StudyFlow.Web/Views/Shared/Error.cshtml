@@ -1,0 +1,21 @@
+@model ErrorViewModel
+@{
+    ViewData["Eyebrow"] = "Sistem Bildirimi";
+    ViewData["Title"] = "İşlem Sırasında Bir Hata Oluştu";
+    ViewData["Subtitle"] = "İsteğiniz işlenirken beklenmedik bir durum meydana geldi.";
+}
+
+<section class="sf-card">
+    <div class="sf-empty-state">
+        <h2 class="sf-empty-title">İstek tamamlanamadı</h2>
+        <p class="sf-empty-text">
+            Lütfen sol menüden ana ekrana dönerek tekrar deneyin.
+        </p>
+        @if (Model.ShowRequestId)
+        {
+            <p class="sf-stat-meta mt-3">
+                İzleme Kimliği (TraceId): <code>@Model.RequestId</code>
+            </p>
+        }
+    </div>
+</section>

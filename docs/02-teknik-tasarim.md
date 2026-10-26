@@ -21,7 +21,7 @@ flowchart TB
 
 Kesik bağlantıdaki API isteğe bağlı genişletmedir. İlk faz MVC/DemoData ile çalışır; Identity giriş akışı Faz 5'te etkinleşir.
 
-İlk aşamada yalnız Controllers, Views, ViewModels, DemoData ve wwwroot bulunur. Sonrasında Domain, Application ve Infrastructure eklenir. Controller form ve HTTP akışını, servis sahiplik/iş kuralı/transaction'ı, Razor sunumu üstlenir. MVC kendi HTTP API'sini çağırmaz.
+İlk aşamada yalnız Controllers, Views, ViewModels, ViewComponents, DemoData, Helpers ve wwwroot bulunur. Faz 1B'de kalıcı veritabanı olmadan `IDemoCourseStore` / `DemoCourseStore` üzerinden tarayıcı oturumu (`ISession`) içinde JSON olarak geçici ders saklanır ve salt okunur `DemoData` ile birleştirilir; ders kartları ortak `_CourseCard.cshtml` PartialView'u (`CourseCardViewModel`), yaklaşan sınav özetleri ise `UpcomingExamsViewComponent` (`UpcomingExamsComponentViewModel`) üzerinden sunulur. Sonrasında Domain, Application ve Infrastructure eklenir. Controller form ve HTTP akışını, servis sahiplik/iş kuralı/transaction'ı, Razor sunumu üstlenir. MVC kendi HTTP API'sini çağırmaz.
 
 Servisler: CourseService, ExamService, TopicService, StudyTaskService, StudyPlanService, StudySessionService, DashboardService, StatisticsService. Bütün belgelerde bu adlar kullanılır. DbContext ve servisler scoped; ICurrentUser istek kapsamlıdır. IClock testlerde sabit saat sağlar. Her sınıfa interface eklemek zorunlu değildir.
 

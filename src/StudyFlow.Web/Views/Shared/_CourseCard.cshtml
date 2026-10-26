@@ -1,0 +1,63 @@
+@model CourseCardViewModel
+
+<article class="@(Model.IsArchived ? "sf-card sf-course-card is-archived" : "sf-card sf-course-card")"
+         aria-labelledby="sfCourseCardTitle-@Model.Id">
+    <div class="d-flex flex-wrap align-items-start justify-content-between gap-2">
+        <h3 id="sfCourseCardTitle-@Model.Id" class="sf-card-title">
+            <a class="sf-card-title-link"
+               asp-controller="Courses"
+               asp-action="Details"
+               asp-route-id="@Model.Id">
+                @Model.Name
+            </a>
+        </h3>
+
+        <div class="d-flex flex-wrap align-items-center gap-1">
+            @if (Model.IsSessionCourse)
+            {
+                <span class="sf-badge sf-badge-demo">Session</span>
+            }
+            @if (Model.IsArchived)
+            {
+                <span class="sf-badge sf-badge-warning">Arşivli</span>
+            }
+            else
+            {
+                <span class="sf-badge sf-badge-success">Aktif</span>
+            }
+        </div>
+    </div>
+
+    <div class="sf-course-card-body">
+        <div class="sf-kv-row">
+            <span class="sf-kv-label">Hedef</span>
+            <strong class="sf-kv-value">@Model.WeeklyTargetMinutes dk</strong>
+        </div>
+
+        <div class="sf-topic-progress-box">
+            <div class="d-flex justify-content-between align-items-center gap-2 mb-1">
+                <span class="sf-kv-label">İlerleme</span>
+                <strong class="sf-kv-value">%@Model.TopicProgressPercent.ToString("0.0")</strong>
+            </div>
+
+            <div class="sf-progress"
+                 role="progressbar"
+                 aria-label="@Model.Name ilerleme yüzdesi"
+                 aria-valuenow="@((int)Math.Round(Model.TopicProgressPercent))"
+                 aria-valuemin="0"
+                 aria-valuemax="100">
+                <div class="sf-progress-bar"
+                     style="width: @(Model.TopicProgressPercent.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture))%"></div>
+            </div>
+        </div>
+
+        <div class="sf-course-card-footer justify-content-end">
+            <a class="sf-btn sf-btn-primary sf-btn-sm"
+               asp-controller="Courses"
+               asp-action="Details"
+               asp-route-id="@Model.Id">
+                Detayı Gör →
+            </a>
+        </div>
+    </div>
+</article>

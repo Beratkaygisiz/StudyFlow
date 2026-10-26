@@ -1,0 +1,150 @@
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model CoursesIndexViewModel
+@{
+    ViewData["Title"] = "Dersler";
+
+    var statusItems = new List<SelectListItem>
+    {
+        new("Tümü", CourseStatusFilterValues.All,
+            string.Equals(Model.StatusFilter, CourseStatusFilterValues.All, StringComparison.OrdinalIgnoreCase)),
+        new("Aktif Dersler", CourseStatusFilterValues.Active,
+            string.Equals(Model.StatusFilter, CourseStatusFilterValues.Active, StringComparison.OrdinalIgnoreCase)),
+        new("Arşivli Dersler", CourseStatusFilterValues.Archived,
+            string.Equals(Model.StatusFilter, CourseStatusFilterValues.Archived, StringComparison.OrdinalIgnoreCase))
+    };
+}
+
+<div class="sf-stack">
+    <section aria-labelledby="sfCourseStatsHeading">
+        <div class="sf-section-header">
+            <h2 id="sfCourseStatsHeading" class="sf-section-title">Özet</h2>
+            <div class="sf-toolbar-actions">
+                <a class="sf-btn sf-btn-primary sf-btn-sm" asp-controller="Courses" asp-action="Create">
+                    + Yeni Ders
+                </a>
+            </div>
+        </div>
+
+        <div class="sf-grid-metrics">
+            <a asp-controller="Courses" asp-action="Index" asp-route-status="All" class="sf-card sf-metric-card sf-metric-card-link" aria-label="Tüm dersleri göster">
+                <div class="sf-metric-top">
+                    <span class="sf-stat-label">Toplam Ders</span>
+                    <span class="sf-metric-icon sf-metric-icon-neutral" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                    </span>
+                </div>
+                <div class="sf-stat-value mb-0">@Model.TotalCourseCount</div>
+            </a>
+
+            <a asp-controller="Courses" asp-action="Index" asp-route-status="Active" class="sf-card sf-metric-card sf-metric-card-link" aria-label="Aktif dersleri göster">
+                <div class="sf-metric-top">
+                    <span class="sf-stat-label">Aktif</span>
+                    <span class="sf-metric-icon" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </span>
+                </div>
+                <div class="sf-stat-value mb-0">@Model.ActiveCourseCount</div>
+            </a>
+
+            <a asp-controller="Courses" asp-action="Index" asp-route-status="Archived" class="sf-card sf-metric-card sf-metric-card-link" aria-label="Arşivli dersleri göster">
+                <div class="sf-metric-top">
+                    <span class="sf-stat-label">Arşivli</span>
+                    <span class="sf-metric-icon sf-metric-icon-neutral" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="21 8 21 21 3 21 3 8"></polyline>
+                            <rect x="1" y="3" width="22" height="5"></rect>
+                            <line x1="10" y1="12" x2="14" y2="12"></line>
+                        </svg>
+                    </span>
+                </div>
+                <div class="sf-stat-value mb-0">@Model.ArchivedCourseCount</div>
+            </a>
+
+            <article class="sf-card sf-metric-card">
+                <div class="sf-metric-top">
+                    <span class="sf-stat-label">Haftalık Hedef</span>
+                    <span class="sf-metric-icon" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </span>
+                </div>
+                <div class="sf-stat-value mb-0">@Model.PersonalWeeklyTargetMinutes dk</div>
+            </article>
+        </div>
+    </section>
+
+    <section class="sf-card" aria-labelledby="sfCourseFilterHeading">
+        <div class="sf-section-header">
+            <h2 id="sfCourseFilterHeading" class="sf-section-title">Filtre</h2>
+            @if (Model.HasActiveFilter)
+            {
+                <span class="sf-badge sf-badge-info">
+                    @Model.Courses.Count sonuç
+                </span>
+            }
+        </div>
+
+        @using (Html.BeginForm("Index", "Courses", FormMethod.Get, new { @class = "sf-filter-form" }))
+        {
+            <div class="sf-filter-group">
+                @Html.Label("q", "Ders Adı", new { @class = "sf-form-label" })
+                @Html.TextBox(
+                    "q",
+                    Model.SearchQuery,
+                    new
+                    {
+                        @class = "sf-form-control",
+                        type = "search",
+                        placeholder = "Ders ara...",
+                        maxlength = "120"
+                    })
+            </div>
+
+            <div class="sf-filter-group">
+                @Html.Label("status", "Durum", new { @class = "sf-form-label" })
+                @Html.DropDownList("status", statusItems, new { @class = "sf-form-select" })
+            </div>
+
+            <div class="sf-filter-actions">
+                @Html.SubmitButton("Filtrele", "sf-btn sf-btn-primary")
+                <a class="sf-btn sf-btn-secondary" asp-controller="Courses" asp-action="Index">
+                    Temizle
+                </a>
+            </div>
+        }
+    </section>
+
+    <section aria-labelledby="sfCourseListHeading">
+        <div class="sf-section-header">
+            <h2 id="sfCourseListHeading" class="sf-section-title">
+                Dersler (@Model.Courses.Count)
+            </h2>
+        </div>
+
+        @if (Model.Courses.Count == 0)
+        {
+            <div class="sf-empty-state" role="status">
+                <p class="sf-empty-text mb-2">Sonuç bulunamadı.</p>
+                <a class="sf-btn sf-btn-primary sf-btn-sm" asp-controller="Courses" asp-action="Index">
+                    Temizle
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="sf-grid-cards">
+                @foreach (var course in Model.Courses)
+                {
+                    @await Html.PartialAsync("_CourseCard", course)
+                }
+            </div>
+        }
+    </section>
+</div>

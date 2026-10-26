@@ -12,10 +12,11 @@
 | CoursesController | Details / `/Courses/Details/1` | Id'ye göre farklı ders, hedef, örnek konular ve sınav bağlantısı |
 | ExamsController | Index / `/Exams` | Tarih sıralı örnek sınavlar; yaklaşan/geçmiş filtreleri |
 | ExamsController | Details / `/Exams/Details/1` | Sınav türü, tarihi, kalan gün ve ders bağlantısı |
+| CoursesController *(Faz 1B ek tam View)* | Create / `/Courses/Create` | `HtmlHelpers` ile geçici ders oluşturma formu (`Name`, `WeeklyTargetMinutes`), `Session` kaydı ve PRG ile `Courses/Details/{id}` yönlendirmesi |
 
 `/` Dashboard/Index'e açılır. Razor foreach ve koşullar ViewModel'deki gerçek örnek veriyle çalışır. Demo tarihler IClock'a göre üretilir; sayfa eski tarih yüzünden boş görünmez. Yanlış Id bulunamadı sayfasına gider.
 
-`_Layout.cshtml`, partial'lar ve CSS altı View hesabına girmez. Create/Edit gibi kalıcı işlemler ilk aşamada çalışıyormuş gibi gösterilmez. Tüm ekranlarda “Örnek veri” açıklaması bulunur. Menü ve detay bağlantıları gerçekten çalışır.
+`_Layout.cshtml`, `_ValidationScriptsPartial.cshtml`, `_CourseCard.cshtml` partial görünümü ve `Views/Shared/Components/UpcomingExams/Default.cshtml` ViewComponent görünümü tam View sayısına dahil edilmez; `Views/Courses/Create.cshtml` ile birlikte planlanan tam View sayısı yedidir (`Dashboard` Index/Weekly, `Courses` Index/Details/Create, `Exams` Index/Details). `_CourseCard.cshtml` hem `Courses/Index` hem `Dashboard/Index` içinde `Html.PartialAsync` ile; `UpcomingExamsViewComponent` ise hem `Dashboard/Index` (genel aktif dersler) hem `Courses/Details` (ders bazlı) içinde `Component.InvokeAsync` ile çalıştırılır. Faz 1B'de yalnız `Session` tabanlı geçici ders ekleme formu çalışır; kalıcı veritabanı kaydı vaat edilmez ve tüm ekranlarda “Örnek veri” / geçici oturum açıklaması bulunur. Menü ve detay bağlantıları gerçekten çalışır.
 
 ## Sonraki ekranlar
 
@@ -39,6 +40,6 @@ Konu/görev düzenleme formunda ders değiştirilemez. Plan CourseId'si görevde
 
 ## Görsel ve erişilebilirlik kuralları
 
-Bootstrap ve ortak `site.css` kullanılır. Ana renk #1D4ED8, metin #0F172A, yüzey #FFFFFF/#EFF6FF; normal metinde en az 4.5:1 kontrast hedeflenir. Gövde 16px; sistem fontu; 8/16/24/32px boşluklar. Tek ana CTA ve tutarlı form düzeni kullanılır.
+Bootstrap ve ortak `site.css` kullanılır. Arka plan `#F7F8FC`, kartlar `#FFFFFF` (vurgulu yüzey `#EFF6FF`), ana vurgu `#1D4ED8`, başlık/ana metin `#0F172A`, ikincil metin `#475569`, kenarlıklar `#E2E8F0` olarak tanımlanır; normal metinde en az 4.5:1 kontrast hedeflenir. `Segoe UI / system-ui` font ailesi, sayfa başlıklarında 28–32px, gövde içeriğinde 14–16px tipografi ölçeği, mobilde 16px ve masaüstünde 24–32px içerik boşlukları, kartlarda 14–16px köşeler ve hafif gölge kullanılır. `Courses/Create` formu 680–760px (`720px`) genişlikte ve en az 44px yüksekliğinde giriş alanlarıyla sunulur.
 
-360px tek kolon, 768px iki kolon, geniş ekranda uygun kart düzeni. Ana içerik yatay taşmaz; geniş tablo etiketli kart veya kontrollü tablo kaydırmasıyla sunulur. Mobil menü klavye ile açılır; aria-expanded ve aktif sayfada aria-current bulunur. Focus görünür; hata yalnız renkle aktarılmaz. Grafik yanında aynı verinin tablosu bulunur. Tam WCAG uygunluğu, ölçülmeden iddia edilmez.
+Masaüstünde yaklaşık 240px (`244px`) sol menü (tutarlı çizgi ikonlar ve belirgin aktif sayfa vurgusuyla), mobilde klavye ile açılan (`aria-expanded`, `aria-current`) açılır menü bulunur. 360px tek kolon, 768px iki kolon, geniş ekranda ana içerik ve ikincil özetler için dengeli çok kolonlu yerleşim kullanılır. Ana içerik yatay taşmaz; geniş tablolar kontrollü kaydırmayla sunulur. Görünür klavye odağı (`:focus-visible`), `prefers-reduced-motion` desteği ve grafik yanında aynı verinin tablosu bulunur. Tam WCAG uygunluğu, ölçülmeden iddia edilmez.

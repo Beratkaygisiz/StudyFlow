@@ -1,0 +1,199 @@
+@model WeeklyOverviewViewModel
+@{
+    ViewData["Title"] = "Haftalık Özet";
+}
+
+<div class="sf-stack">
+    <section aria-labelledby="sfWeeklyTotalsHeading">
+        <div class="sf-section-header">
+            <h2 id="sfWeeklyTotalsHeading" class="sf-section-title">
+                Özet (@Model.WeekStart.ToString("dd.MM") – @Model.WeekEnd.ToString("dd.MM"))
+            </h2>
+            <a class="sf-btn sf-btn-secondary sf-btn-sm" asp-controller="Dashboard" asp-action="Index">
+                ← Dashboard
+            </a>
+        </div>
+
+        <div class="sf-grid-metrics">
+            <article class="sf-card sf-metric-card">
+                <div class="sf-metric-top">
+                    <span class="sf-stat-label">Haftalık Hedef</span>
+                    <span class="sf-metric-icon" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </span>
+                </div>
+                <div class="sf-stat-value mb-0">@Model.PersonalWeeklyTargetMinutes dk</div>
+            </article>
+
+            <article class="sf-card sf-metric-card">
+                <div class="sf-metric-top">
+                    <span class="sf-stat-label">Plan Toplamı</span>
+                    <span class="sf-metric-icon sf-metric-icon-neutral" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                    </span>
+                </div>
+                <div class="sf-stat-value mb-0">@Model.WeeklyPlannedMinutes dk</div>
+            </article>
+
+            <article class="sf-card sf-metric-card">
+                <div class="sf-metric-top">
+                    <span class="sf-stat-label">Gerçekleşen</span>
+                    <span class="sf-badge sf-badge-primary">%@Model.WeeklyTargetAchievementPercent</span>
+                </div>
+                <div class="sf-stat-value mb-0">@Model.WeeklyActualMinutes dk</div>
+            </article>
+
+            <article class="sf-card sf-metric-card">
+                <div class="sf-metric-top">
+                    <span class="sf-stat-label">Plan Farkı</span>
+                    <span class="sf-badge sf-badge-info">Fark</span>
+                </div>
+                <div class="sf-stat-value mb-0">@Model.WeeklyPlanDeltaText</div>
+            </article>
+        </div>
+    </section>
+
+    <section class="sf-card" aria-labelledby="sfTargetBarHeading">
+        <div class="sf-section-header">
+            <h2 id="sfTargetBarHeading" class="sf-section-title">Hedef İlerlemesi</h2>
+            <span class="sf-badge sf-badge-primary">
+                @Model.WeeklyActualMinutes / @Model.PersonalWeeklyTargetMinutes dk (%@Model.WeeklyTargetAchievementPercent)
+            </span>
+        </div>
+
+        <div class="sf-progress sf-progress-lg"
+             role="progressbar"
+             aria-label="Kişisel haftalık hedef gerçekleşme yüzdesi"
+             aria-valuenow="@Model.WeeklyTargetAchievementPercent"
+             aria-valuemin="0"
+             aria-valuemax="100">
+            <div class="sf-progress-bar" style="width: @Model.WeeklyTargetAchievementPercent%"></div>
+        </div>
+    </section>
+
+    <section class="sf-card" aria-labelledby="sfWeeklyChartHeading">
+        <div class="sf-section-header">
+            <h2 id="sfWeeklyChartHeading" class="sf-section-title">
+                7 Günlük Grafik
+            </h2>
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <span class="sf-badge sf-badge-neutral">Plan: @Model.WeeklyPlannedMinutes dk</span>
+                <span class="sf-badge sf-badge-primary">Gerçek: @Model.WeeklyActualMinutes dk</span>
+            </div>
+        </div>
+
+        <div class="sf-weekly-chart" role="img" aria-label="7 günlük planlanan ve gerçekleşen çalışma süresi karşılaştırma grafiği">
+            @foreach (var day in Model.Days)
+            {
+                int plannedPct = Model.ChartScaleMaxMinutes > 0
+                    ? (int)Math.Min(100, Math.Round(day.PlannedMinutes * 100.0 / Model.ChartScaleMaxMinutes, MidpointRounding.AwayFromZero))
+                    : 0;
+                int actualPct = Model.ChartScaleMaxMinutes > 0
+                    ? (int)Math.Min(100, Math.Round(day.ActualMinutes * 100.0 / Model.ChartScaleMaxMinutes, MidpointRounding.AwayFromZero))
+                    : 0;
+
+                <div class="sf-chart-row @(day.IsToday ? "is-today" : "")">
+                    <div class="sf-chart-day">
+                        <div class="d-flex align-items-center gap-1">
+                            <strong>@day.DayName</strong>
+                            @if (day.IsToday)
+                            {
+                                <span class="sf-badge sf-badge-primary">Bugün</span>
+                            }
+                        </div>
+                        <span class="sf-stat-meta sf-tabular">@day.Date.ToString("dd.MM")</span>
+                    </div>
+
+                    <div class="sf-chart-bars">
+                        <div class="sf-chart-bar-line">
+                            <span class="sf-chart-bar-label">Plan</span>
+                            <div class="sf-chart-track">
+                                <div class="sf-chart-fill sf-chart-fill-planned" style="width: @plannedPct%"></div>
+                            </div>
+                            <span class="sf-chart-value">@day.PlannedMinutes dk</span>
+                        </div>
+
+                        <div class="sf-chart-bar-line">
+                            <span class="sf-chart-bar-label">Gerçek</span>
+                            <div class="sf-chart-track">
+                                <div class="sf-chart-fill sf-chart-fill-actual" style="width: @actualPct%"></div>
+                            </div>
+                            <strong class="sf-chart-value">@day.ActualMinutes dk</strong>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
+    <section class="sf-card" aria-labelledby="sfWeeklyTableHeading">
+        <div class="sf-section-header">
+            <h2 id="sfWeeklyTableHeading" class="sf-section-title">
+                7 Günlük Tablo
+            </h2>
+        </div>
+
+        <div class="sf-table-wrap">
+            <table class="sf-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Gün</th>
+                        <th scope="col">Tarih</th>
+                        <th scope="col">Plan</th>
+                        <th scope="col">Gerçek</th>
+                        <th scope="col">Fark</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var day in Model.Days)
+                    {
+                        <tr class="@(day.IsToday ? "is-today" : "")">
+                            <td>
+                                <strong>@day.DayName</strong>
+                                @if (day.IsToday)
+                                {
+                                    <span class="sf-badge sf-badge-primary ms-1">Bugün</span>
+                                }
+                            </td>
+                            <td>@day.Date.ToString("dd.MM.yyyy")</td>
+                            <td>@day.PlannedMinutes dk</td>
+                            <td><strong>@day.ActualMinutes dk</strong></td>
+                            <td>
+                                @if (day.PlanDeltaMinutes > 0)
+                                {
+                                    <span class="sf-badge sf-badge-success">@day.PlanDeltaText</span>
+                                }
+                                else if (day.PlanDeltaMinutes < 0)
+                                {
+                                    <span class="sf-badge sf-badge-warning">@day.PlanDeltaText</span>
+                                }
+                                else
+                                {
+                                    <span class="sf-badge sf-badge-neutral">0 dk</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th scope="row" colspan="2">Toplam</th>
+                        <th>@Model.WeeklyPlannedMinutes dk</th>
+                        <th>@Model.WeeklyActualMinutes dk</th>
+                        <th>
+                            <span class="sf-badge sf-badge-info">@Model.WeeklyPlanDeltaText</span>
+                        </th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </section>
+</div>

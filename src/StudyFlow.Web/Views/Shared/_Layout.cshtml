@@ -1,0 +1,177 @@
+@inject IClock Clock
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? string.Empty;
+
+    bool isDashboardActive =
+        string.Equals(currentController, "Dashboard", StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(currentAction, "Index", StringComparison.OrdinalIgnoreCase);
+
+    bool isWeeklyActive =
+        string.Equals(currentController, "Dashboard", StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(currentAction, "Weekly", StringComparison.OrdinalIgnoreCase);
+
+    bool isCoursesActive =
+        string.Equals(currentController, "Courses", StringComparison.OrdinalIgnoreCase);
+
+    bool isExamsActive =
+        string.Equals(currentController, "Exams", StringComparison.OrdinalIgnoreCase);
+
+    var pageTitle = ViewData["Title"]?.ToString() ?? "Dashboard";
+    var today = Clock.Today;
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@pageTitle - StudyFlow</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <a class="sf-skip-link" href="#sfMainContent">Ana içeriğe geç</a>
+
+    <div class="sf-shell">
+        <aside class="sf-sidebar" aria-label="Yan menü">
+            <div class="sf-sidebar-top">
+                <a class="sf-brand" asp-controller="Dashboard" asp-action="Index">
+                    <span class="sf-brand-mark" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                    </span>
+                    <span class="sf-brand-text">
+                        <span class="sf-brand-name">StudyFlow</span>
+                    </span>
+                </a>
+
+                <button id="sfMobileMenuToggle"
+                        class="sf-mobile-toggle"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#sfPrimaryNav"
+                        aria-controls="sfPrimaryNav"
+                        aria-expanded="false"
+                        aria-label="Ana menüyü aç veya kapat">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                    <span>Menü</span>
+                </button>
+            </div>
+
+            <div id="sfPrimaryNav" class="collapse sf-nav-panel">
+                <nav aria-label="Birincil gezinme">
+                    <ul class="sf-nav-list">
+                        <li>
+                            <a class="sf-nav-link @(isDashboardActive ? "is-active" : "")"
+                               asp-controller="Dashboard"
+                               asp-action="Index"
+                               aria-current="@(isDashboardActive ? "page" : null)">
+                                <span class="sf-nav-link-inner">
+                                    <svg class="sf-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <rect x="3" y="3" width="7" height="9" rx="1.5"></rect>
+                                        <rect x="14" y="3" width="7" height="5" rx="1.5"></rect>
+                                        <rect x="14" y="12" width="7" height="9" rx="1.5"></rect>
+                                        <rect x="3" y="16" width="7" height="5" rx="1.5"></rect>
+                                    </svg>
+                                    <span>Dashboard</span>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="sf-nav-link @(isWeeklyActive ? "is-active" : "")"
+                               asp-controller="Dashboard"
+                               asp-action="Weekly"
+                               aria-current="@(isWeeklyActive ? "page" : null)">
+                                <span class="sf-nav-link-inner">
+                                    <svg class="sf-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                                    </svg>
+                                    <span>Haftalık Özet</span>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="sf-nav-link @(isCoursesActive ? "is-active" : "")"
+                               asp-controller="Courses"
+                               asp-action="Index"
+                               aria-current="@(isCoursesActive ? "page" : null)">
+                                <span class="sf-nav-link-inner">
+                                    <svg class="sf-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                    </svg>
+                                    <span>Dersler</span>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="sf-nav-link @(isExamsActive ? "is-active" : "")"
+                               asp-controller="Exams"
+                               asp-action="Index"
+                               aria-current="@(isExamsActive ? "page" : null)">
+                                <span class="sf-nav-link-inner">
+                                    <svg class="sf-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                    <span>Sınavlar</span>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <div class="sf-sidebar-footer">
+                    <a class="sf-btn sf-btn-secondary sf-btn-sm w-100" asp-controller="Courses" asp-action="Create">
+                        + Yeni Ders Ekle
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <div class="sf-workspace">
+            <header class="sf-page-header">
+                <div class="sf-page-header-inner">
+                    <div class="sf-page-header-titles">
+                        <h1 class="sf-page-title">@pageTitle</h1>
+                    </div>
+                    <div class="sf-page-header-badges">
+                        <span class="sf-badge sf-badge-demo">
+                            <span class="sf-badge-dot" aria-hidden="true"></span>
+                            Örnek veri
+                        </span>
+                        <span class="sf-badge sf-badge-neutral sf-tabular">
+                            @today.ToString("dd.MM.yyyy") · @DemoEnumExtensions.GetTurkishDayName(today)
+                        </span>
+                    </div>
+                </div>
+            </header>
+
+            <main id="sfMainContent" role="main" class="sf-main" tabindex="-1">
+                @RenderBody()
+            </main>
+
+            <footer class="sf-footer">
+                <div class="sf-footer-inner">
+                    <span>&copy; @today.Year StudyFlow</span>
+                    <span class="sf-footer-meta">Örnek veri</span>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

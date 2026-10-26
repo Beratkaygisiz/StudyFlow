@@ -1,0 +1,200 @@
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model ExamsIndexViewModel
+@{
+    ViewData["Title"] = "Sınavlar";
+
+    var filterItems = new List<SelectListItem>
+    {
+        new("Tüm Sınavlar", ExamFilterValues.All,
+            string.Equals(Model.PeriodFilter, ExamFilterValues.All, StringComparison.OrdinalIgnoreCase)),
+        new("Yaklaşan Sınavlar (14 Gün)", ExamFilterValues.Upcoming,
+            string.Equals(Model.PeriodFilter, ExamFilterValues.Upcoming, StringComparison.OrdinalIgnoreCase)),
+        new("Geçmiş Sınavlar", ExamFilterValues.Past,
+            string.Equals(Model.PeriodFilter, ExamFilterValues.Past, StringComparison.OrdinalIgnoreCase))
+    };
+
+    var courseItems = Model.CourseOptions
+        .Select(c => new SelectListItem(
+            text: c.IsArchived ? $"{c.Name} (Arşivli)" : c.Name,
+            value: c.Id.ToString(),
+            selected: Model.SelectedCourseId == c.Id))
+        .ToList();
+}
+
+<div class="sf-stack">
+    <section aria-labelledby="sfExamMetricsTitle">
+        <h2 id="sfExamMetricsTitle" class="visually-hidden">Sınav Özeti</h2>
+        <div class="sf-grid-metrics">
+            <a asp-controller="Exams" asp-action="Index" asp-route-filter="All" class="sf-card sf-metric-card sf-metric-card-link" aria-label="Tüm sınavları göster">
+                <div class="sf-metric-top">
+                    <span class="sf-stat-label">Toplam Sınav</span>
+                    <span class="sf-metric-icon sf-metric-icon-neutral" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                    </span>
+                </div>
+                <div class="sf-stat-value mb-0">@Model.TotalExamCount</div>
+            </a>
+
+            <a asp-controller="Exams" asp-action="Index" asp-route-filter="Upcoming" class="sf-card sf-metric-card sf-metric-card-link" aria-label="Yaklaşan sınavları göster">
+                <div class="sf-metric-top">
+                    <span class="sf-stat-label">Yaklaşan (14 Gün)</span>
+                    <span class="sf-metric-icon" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </span>
+                </div>
+                <div class="sf-stat-value mb-0">@Model.UpcomingExamCount</div>
+            </a>
+
+            <a asp-controller="Exams" asp-action="Index" asp-route-filter="Past" class="sf-card sf-metric-card sf-metric-card-link" aria-label="Geçmiş sınavları göster">
+                <div class="sf-metric-top">
+                    <span class="sf-stat-label">Geçmiş</span>
+                    <span class="sf-metric-icon sf-metric-icon-neutral" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </span>
+                </div>
+                <div class="sf-stat-value mb-0">@Model.PastExamCount</div>
+            </a>
+
+            <article class="sf-card sf-metric-card">
+                <div class="sf-metric-top">
+                    <span class="sf-stat-label">Listelenen</span>
+                    <span class="sf-badge sf-badge-info">@ExamFilterValues.GetDisplayLabel(Model.PeriodFilter)</span>
+                </div>
+                <div class="sf-stat-value mb-0">@Model.Exams.Count</div>
+            </article>
+        </div>
+    </section>
+
+    <section class="sf-card" aria-labelledby="sfExamFilterHeading">
+        <div class="sf-section-header">
+            <h2 id="sfExamFilterHeading" class="sf-section-title">Filtre</h2>
+            @if (Model.HasActiveFilter)
+            {
+                <span class="sf-badge sf-badge-info">
+                    @ExamFilterValues.GetDisplayLabel(Model.PeriodFilter)
+                    @if (!string.IsNullOrWhiteSpace(Model.SelectedCourseName))
+                    {
+                        <span>· @Model.SelectedCourseName</span>
+                    }
+                </span>
+            }
+        </div>
+
+        @using (Html.BeginForm("Index", "Exams", FormMethod.Get, new { @class = "sf-filter-form" }))
+        {
+            <div class="sf-filter-group">
+                @Html.Label("filter", "Dönem", new { @class = "sf-form-label" })
+                @Html.DropDownList("filter", filterItems, new { @class = "sf-form-select" })
+            </div>
+
+            <div class="sf-filter-group">
+                @Html.Label("courseId", "Ders", new { @class = "sf-form-label" })
+                @Html.DropDownList("courseId", courseItems, "Tüm Dersler", new { @class = "sf-form-select" })
+            </div>
+
+            <div class="sf-filter-actions">
+                @Html.SubmitButton("Filtrele", "sf-btn sf-btn-primary")
+                <a class="sf-btn sf-btn-secondary" asp-controller="Exams" asp-action="Index">
+                    Temizle
+                </a>
+            </div>
+        }
+    </section>
+
+    <section class="sf-card" aria-labelledby="sfExamListHeading">
+        <div class="sf-section-header">
+            <h2 id="sfExamListHeading" class="sf-section-title">
+                Sınavlar (@Model.Exams.Count)
+            </h2>
+        </div>
+
+        @if (Model.Exams.Count == 0)
+        {
+            <div class="sf-empty-state" role="status">
+                <p class="sf-empty-text mb-2">Sınav bulunamadı.</p>
+                <a class="sf-btn sf-btn-primary sf-btn-sm" asp-controller="Exams" asp-action="Index">
+                    Temizle
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="sf-table-wrap">
+                <table class="sf-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Tarih</th>
+                            <th scope="col">Sınav</th>
+                            <th scope="col">Ders</th>
+                            <th scope="col">Tür</th>
+                            <th scope="col">Durum</th>
+                            <th scope="col" class="text-end">Detay</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var exam in Model.Exams)
+                        {
+                            <tr class="@(exam.DaysRemaining == 0 && !exam.IsPast ? "is-today" : "")">
+                                <td>
+                                    <div class="sf-date-block">
+                                        <span class="sf-date-day">@exam.ScheduledAtLocal.ToString("dd.MM.yyyy")</span>
+                                        <span class="sf-date-time">@exam.ScheduledAtLocal.ToString("HH:mm")</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a class="sf-card-title-link fw-bold"
+                                       asp-controller="Exams"
+                                       asp-action="Details"
+                                       asp-route-id="@exam.Id">
+                                        @exam.Title
+                                    </a>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-wrap align-items-center gap-1">
+                                        <a class="sf-card-title-link"
+                                           asp-controller="Courses"
+                                           asp-action="Details"
+                                           asp-route-id="@exam.CourseId">
+                                            @exam.CourseName
+                                        </a>
+                                        @if (exam.CourseIsArchived)
+                                        {
+                                            <span class="sf-badge sf-badge-warning">Arşivli</span>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="sf-badge @exam.TypeBadgeClass">@exam.TypeDisplayName</span>
+                                </td>
+                                <td>
+                                    <span class="sf-badge @exam.RemainingDaysBadgeClass">
+                                        @exam.RemainingDaysText
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <a class="sf-btn sf-btn-secondary sf-btn-sm"
+                                       asp-controller="Exams"
+                                       asp-action="Details"
+                                       asp-route-id="@exam.Id"
+                                       aria-label="@exam.Title sınav detayı">
+                                        Detay →
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+</div>

@@ -31,13 +31,13 @@ Tek uygulama içinde controller, servis, domain ve veri erişim sorumlulukları 
 
 ## İlk ders teslimi
 
-| Controller | İki ayrı View |
-| --- | --- |
-| DashboardController | Index, Weekly |
-| CoursesController | Index, Details |
-| ExamsController | Index, Details |
+| Controller | Temel iki ayrı View | Faz 1B ek View |
+| --- | --- | --- |
+| DashboardController | Index, Weekly | — |
+| CoursesController | Index, Details | Create (oturum süresince geçici ders ekleme) |
+| ExamsController | Index, Details | — |
 
-Altı ekran ortak navigasyon, responsive CSS ve Razor ile üretilen dinamik örnek veri içerir. Layout ve partial dosyaları altı View hesabına katılmaz. Bu aşamada veritabanı ve giriş sistemi gerekli değildir; ekranlarda örnek veri etiketi bulunur.
+Temel altı ekran ortak navigasyon, responsive CSS ve Razor ile üretilen dinamik örnek veri içerir. Faz 1B ile eklenen `Courses/Create` formu, temel altı ekrana ek 7. tam View olarak `HtmlHelpers`, PRG ve `Session` tabanlı geçici ders saklama (`DemoCourseStore`) sağlar; ayrıca `_CourseCard` PartialView'u (`Courses/Index` ve `Dashboard/Index`) ile `UpcomingExams` ViewComponent'i (`Dashboard/Index` ve `Courses/Details`) en az ikişer tam sayfada ortak kullanılır. Layout, partial ve ViewComponent `Default.cshtml` dosyaları 7 tam View hesabına katılmaz. Bu aşamada kalıcı veritabanı ve giriş sistemi gerekli değildir; ekranlarda örnek/geçici veri etiketi bulunur.
 
 ## Dokümanlar
 

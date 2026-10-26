@@ -1,0 +1,38 @@
+@model NotFoundViewModel
+@{
+    // Bulunamadı (HTTP 404) sayfası başlık ve üst bilgileri
+    ViewData["Eyebrow"] = "HTTP 404 · Kayıt Bulunamadı";
+    ViewData["Title"] = $"{Model.ResourceName} Kaydı Bulunamadı";
+    ViewData["Subtitle"] = "İstenen örnek veri kaydı mevcut değil veya erişilemiyor.";
+}
+
+@* FR-031 ve FR-032: Olmayan örnek kimliklerde kullanıcıya gösterilen ortak bulunamadı ekranı *@
+<section class="sf-card" aria-labelledby="sfNotFoundTitle">
+    <div class="sf-empty-state">
+        <div class="mb-2">
+            <span class="sf-badge sf-badge-danger">HTTP 404 · Bulunamadı</span>
+        </div>
+
+        <h2 id="sfNotFoundTitle" class="sf-empty-title">
+            @Model.ResourceName bulunamadı
+            @if (Model.RequestedId.HasValue)
+            {
+                <span>(#@Model.RequestedId.Value)</span>
+            }
+        </h2>
+
+        <p class="sf-empty-text mb-3">
+            @Model.Message
+            İlk teslim örnek veri kümesinde yalnızca tanımlı ders ve sınav kimlikleri görüntülenebilir.
+        </p>
+
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+            <a class="sf-btn sf-btn-primary" href="@Model.ReturnUrl">
+                @Model.ReturnLabel
+            </a>
+            <a class="sf-btn sf-btn-secondary" asp-controller="Dashboard" asp-action="Index">
+                Dashboard'a Dön
+            </a>
+        </div>
+    </div>
+</section>

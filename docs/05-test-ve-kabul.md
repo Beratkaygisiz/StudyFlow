@@ -32,6 +32,7 @@ Her satırdaki geçerli akışın yanında boş, sınır dışı ve bulunamayan 
 | 029–031 | Gerçek kayıt/giriş/cookie/POST çıkış; normalize e-posta benzersizliği; genel giriş hatası ve kilitleme. A yalnız kendi veri ve toplamlarını görsün. Profil Should; geçersiz dilim reddedilsin. |
 | 032–033 | Üç Controller ve altı ayrı anlamlı View; layout/partial sayılmaz; demo etiketi, dinamik Razor, menü/detay/filtre, yanlış Id ve boş durum. 360/768/1440px ve klavye. |
 | 034–036 | Aynı oluşturma isteği tek kayıt; eski version veri ezmesin; demo sahibi yerel geliştirmeyle sınırlı kalsın. Aşağıdaki kritik varyantlar geçsin. |
+| 037–039 | Faz 1B `Courses/Create` (`HtmlHelpers`, tek anti-forgery token) geçerli girdide `Session`'a aktif ders ekleyip PRG ile `/Courses/Details/{id}` sayfasına yönlendirsin; yeni ders `/Courses` ve `/Dashboard` hedef/aktif ders toplamlarında görünsün; geçersiz girdide aynı View ve hatalar korunsun, `Session`'a kayıt eklenmesin; `_CourseCard` PartialView (`Courses/Index`, `Dashboard/Index`) ve `UpcomingExams` ViewComponent (`Dashboard/Index`, `Courses/Details`) doğru bağlamda çalışsın. |
 
 ## Kritik olumsuz ve sınır senaryoları
 

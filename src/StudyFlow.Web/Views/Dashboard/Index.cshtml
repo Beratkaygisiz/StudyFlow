@@ -1,0 +1,239 @@
+@model DashboardIndexViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+
+    const double ringRadius = 66.0;
+    double ringCircumference = 2.0 * Math.PI * ringRadius;
+    int targetPct = Math.Clamp(Model.WeeklyTargetAchievementPercent, 0, 100);
+    double ringDashOffset = ringCircumference * (1.0 - (targetPct / 100.0));
+    string circumferenceStr = ringCircumference.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);
+    string dashOffsetStr = ringDashOffset.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);
+}
+
+<div class="sf-stack">
+    <section aria-labelledby="sfDashboardMetricsTitle">
+        <div class="sf-section-header">
+            <h2 id="sfDashboardMetricsTitle" class="sf-section-title">Özet</h2>
+            <div class="sf-toolbar-actions">
+                <a class="sf-btn sf-btn-secondary sf-btn-sm" asp-controller="Courses" asp-action="Create">
+                    + Yeni Ders
+                </a>
+                <a class="sf-btn sf-btn-secondary sf-btn-sm" asp-controller="Courses" asp-action="Index">
+                    Dersler
+                </a>
+                <a class="sf-btn sf-btn-primary sf-btn-sm" asp-controller="Dashboard" asp-action="Weekly">
+                    Haftalık Özet →
+                </a>
+            </div>
+        </div>
+
+        <div class="sf-grid-metrics">
+            <a asp-controller="Courses" asp-action="Index" class="sf-card sf-metric-card sf-metric-card-link" aria-label="Aktif Dersler">
+                <div class="sf-metric-top">
+                    <span class="sf-stat-label">Aktif Dersler</span>
+                    <span class="sf-metric-icon" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                    </span>
+                </div>
+                <div class="sf-stat-value mb-0">@Model.ActiveCourseCount</div>
+            </a>
+
+            <article class="sf-card sf-metric-card">
+                <div class="sf-metric-top">
+                    <span class="sf-stat-label">Bekleyen Görev</span>
+                    <span class="sf-metric-icon" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 11l3 3L22 4"></path>
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                        </svg>
+                    </span>
+                </div>
+                <div class="sf-stat-value mb-0">@Model.PendingTaskCount</div>
+            </article>
+
+            <article class="sf-card sf-metric-card">
+                <div class="sf-metric-top">
+                    <span class="sf-stat-label">Geciken Görev</span>
+                    <span class="sf-metric-icon @(Model.OverdueTaskCount > 0 ? "sf-metric-icon-danger" : "sf-metric-icon-neutral")" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </span>
+                </div>
+                <div class="sf-stat-value mb-0">@Model.OverdueTaskCount</div>
+            </article>
+
+            <a asp-controller="Dashboard" asp-action="Weekly" class="sf-card sf-metric-card sf-metric-card-link" aria-label="Haftalık Süre ve Hedef">
+                <div class="sf-metric-top">
+                    <span class="sf-stat-label">Haftalık Süre / Hedef</span>
+                    <span class="sf-badge sf-badge-primary">%@Model.WeeklyTargetAchievementPercent</span>
+                </div>
+                <div class="sf-stat-value sf-stat-value-compact mb-0">@Model.WeeklyActualMinutes / @Model.PersonalWeeklyTargetMinutes dk</div>
+            </a>
+        </div>
+    </section>
+
+    <div class="sf-dashboard-hero">
+        <section class="sf-card" aria-labelledby="sfDashboardWeeklyChartHeading">
+            <div class="sf-section-header">
+                <h2 id="sfDashboardWeeklyChartHeading" class="sf-section-title">
+                    Haftalık Çalışma (@Model.WeekStart.ToString("dd.MM") – @Model.WeekEnd.ToString("dd.MM"))
+                </h2>
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <span class="sf-badge sf-badge-neutral">Plan: @Model.WeeklyPlannedMinutes dk</span>
+                    <span class="sf-badge sf-badge-primary">Gerçek: @Model.WeeklyActualMinutes dk</span>
+                </div>
+            </div>
+
+            @if (Model.WeeklyDays is null || Model.WeeklyDays.Count == 0)
+            {
+                <div class="sf-empty-state" role="status">
+                    <p class="sf-empty-text">Veri yok.</p>
+                </div>
+            }
+            else
+            {
+                <div class="sf-vchart-grid" role="img" aria-label="7 günlük planlanan ve gerçekleşen dakika grafiği">
+                    @foreach (var day in Model.WeeklyDays)
+                    {
+                        int planHeightPct = Model.ChartScaleMaxMinutes > 0
+                            ? (int)Math.Clamp(Math.Round(day.PlannedMinutes * 100.0 / Model.ChartScaleMaxMinutes), 0, 100)
+                            : 0;
+                        int actualHeightPct = Model.ChartScaleMaxMinutes > 0
+                            ? (int)Math.Clamp(Math.Round(day.ActualMinutes * 100.0 / Model.ChartScaleMaxMinutes), 0, 100)
+                            : 0;
+
+                        <div class="sf-vchart-col @(day.IsToday ? "is-today" : "")">
+                            <span class="sf-vchart-values">
+                                @day.ActualMinutes<span class="text-secondary">/@day.PlannedMinutes</span>
+                            </span>
+                            <div class="sf-vchart-bars">
+                                <div class="sf-vchart-bar sf-vchart-bar-plan"
+                                     style="height: @(Math.Max(4, planHeightPct))%"></div>
+                                <div class="sf-vchart-bar sf-vchart-bar-actual"
+                                     style="height: @(Math.Max(4, actualHeightPct))%"></div>
+                            </div>
+                            <span class="sf-vchart-day">@day.ShortDayName</span>
+                        </div>
+                    }
+                </div>
+            }
+        </section>
+
+        <section class="sf-card sf-ring-panel" aria-labelledby="sfWeeklyRingHeading">
+            <div class="sf-section-header w-100 mb-0">
+                <h2 id="sfWeeklyRingHeading" class="sf-section-title">Hedef Oranı</h2>
+                <span class="sf-badge sf-badge-demo">Pzt – Paz</span>
+            </div>
+
+            <div class="sf-ring-wrap"
+                 role="img"
+                 aria-label="Haftalık hedef tamamlanma oranı %@Model.WeeklyTargetAchievementPercent">
+                <svg class="sf-ring-svg" viewBox="0 0 160 160" aria-hidden="true">
+                    <circle class="sf-ring-track" cx="80" cy="80" r="66"></circle>
+                    <circle class="sf-ring-progress"
+                            cx="80"
+                            cy="80"
+                            r="66"
+                            stroke-dasharray="@circumferenceStr"
+                            stroke-dashoffset="@dashOffsetStr"></circle>
+                </svg>
+                <div class="sf-ring-center">
+                    <span class="sf-ring-value">%@Model.WeeklyTargetAchievementPercent</span>
+                    <span class="sf-ring-caption">Tamamlanan</span>
+                </div>
+            </div>
+
+            <div class="sf-ring-stats">
+                <div>
+                    <div class="sf-stat-label">Gerçek</div>
+                    <strong class="sf-kv-value">@Model.WeeklyActualMinutes dk</strong>
+                </div>
+                <div>
+                    <div class="sf-stat-label">Hedef</div>
+                    <strong class="sf-kv-value">@Model.PersonalWeeklyTargetMinutes dk</strong>
+                </div>
+            </div>
+
+            <a class="sf-btn sf-btn-primary w-100" asp-controller="Dashboard" asp-action="Weekly">
+                Haftalık Özet →
+            </a>
+        </section>
+    </div>
+
+    <section class="sf-card" aria-labelledby="sfCourseProgressHeading">
+        <div class="sf-section-header">
+            <h2 id="sfCourseProgressHeading" class="sf-section-title">
+                Aktif Dersler (@Model.CourseProgressItems.Count)
+            </h2>
+            <a class="sf-btn sf-btn-secondary sf-btn-sm" asp-controller="Courses" asp-action="Index">
+                Tümü →
+            </a>
+        </div>
+
+        @if (Model.CourseProgressItems.Count == 0)
+        {
+            <div class="sf-empty-state" role="status">
+                <p class="sf-empty-text">Aktif ders yok.</p>
+            </div>
+        }
+        else
+        {
+            <div class="sf-grid-cards">
+                @foreach (var course in Model.CourseProgressItems)
+                {
+                    @await Html.PartialAsync("_CourseCard", course)
+                }
+            </div>
+        }
+    </section>
+
+    <div class="sf-dashboard-bottom">
+        @await Component.InvokeAsync("UpcomingExams")
+
+        <section class="sf-card" aria-labelledby="sfRecentCompletedTasksHeading">
+            <div class="sf-section-header">
+                <h2 id="sfRecentCompletedTasksHeading" class="sf-section-title">
+                    Son Tamamlananlar (@Model.RecentCompletedTasks.Count)
+                </h2>
+            </div>
+
+            @if (Model.RecentCompletedTasks.Count == 0)
+            {
+                <div class="sf-empty-state" role="status">
+                    <p class="sf-empty-text">Tamamlanmış görev yok.</p>
+                </div>
+            }
+            else
+            {
+                <ul class="sf-task-feed">
+                    @foreach (var task in Model.RecentCompletedTasks)
+                    {
+                        <li class="sf-task-feed-item">
+                            <div class="sf-task-feed-top">
+                                <strong class="sf-task-feed-title">@task.Title</strong>
+                                <span class="sf-badge @task.PriorityBadgeClass">@task.PriorityDisplayName</span>
+                            </div>
+                            <div class="sf-task-feed-meta">
+                                <a class="sf-card-title-link"
+                                   asp-controller="Courses"
+                                   asp-action="Details"
+                                   asp-route-id="@task.CourseId">
+                                    @task.CourseName
+                                </a>
+                                <span aria-hidden="true">·</span>
+                                <time class="sf-tabular" datetime="@task.CompletedAtLocal.ToString("O")">
+                                    @task.CompletedAtLocal.ToString("dd.MM.yyyy HH:mm")
+                                </time>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
+    </div>
+</div>

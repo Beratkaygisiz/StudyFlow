@@ -1,0 +1,103 @@
+@model UpcomingExamsComponentViewModel
+
+<section class="sf-card" aria-labelledby="sfUpcomingExamsCompHeading">
+    <div class="sf-section-header">
+        <h2 id="sfUpcomingExamsCompHeading" class="sf-section-title">
+            Yaklaşan Sınavlar (@Model.Exams.Count)
+        </h2>
+
+        @if (Model.IsCourseScoped && Model.CourseId.HasValue)
+        {
+            <a class="sf-btn sf-btn-secondary sf-btn-sm"
+               asp-controller="Exams"
+               asp-action="Index"
+               asp-route-filter="Upcoming"
+               asp-route-courseId="@Model.CourseId.Value">
+                Tümü →
+            </a>
+        }
+        else
+        {
+            <a class="sf-btn sf-btn-secondary sf-btn-sm"
+               asp-controller="Exams"
+               asp-action="Index"
+               asp-route-filter="Upcoming">
+                Tüm Sınavlar →
+            </a>
+        }
+    </div>
+
+    @if (Model.IsArchivedCourse)
+    {
+        <div class="sf-empty-state" role="status">
+            <p class="sf-empty-text mb-0">Arşivli ders (yaklaşan sınav yok)</p>
+        </div>
+    }
+    else if (Model.Exams.Count == 0)
+    {
+        <div class="sf-empty-state" role="status">
+            <p class="sf-empty-text mb-0">Yaklaşan sınav bulunmuyor.</p>
+        </div>
+    }
+    else
+    {
+        <div class="sf-table-wrap">
+            <table class="sf-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Tarih</th>
+                        <th scope="col">Sınav</th>
+                        <th scope="col">Kalan Gün</th>
+                        <th scope="col" class="text-end">Detay</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var exam in Model.Exams)
+                    {
+                        <tr class="@(exam.DaysRemaining == 0 ? "is-today" : "")">
+                            <td>
+                                <div class="sf-date-block">
+                                    <span class="sf-date-day">@exam.ScheduledAtLocal.ToString("dd.MM.yyyy")</span>
+                                    <span class="sf-date-time">@exam.ScheduledAtLocal.ToString("HH:mm")</span>
+                                </div>
+                            </td>
+                            <td>
+                                <a class="sf-card-title-link fw-bold d-block"
+                                   asp-controller="Exams"
+                                   asp-action="Details"
+                                   asp-route-id="@exam.Id">
+                                    @exam.Title
+                                </a>
+                                <div class="d-flex flex-wrap align-items-center gap-1 mt-1">
+                                    @if (!Model.IsCourseScoped)
+                                    {
+                                        <a class="sf-card-title-link sf-stat-meta"
+                                           asp-controller="Courses"
+                                           asp-action="Details"
+                                           asp-route-id="@exam.CourseId">
+                                            @exam.CourseName
+                                        </a>
+                                        <span class="sf-stat-meta" aria-hidden="true">·</span>
+                                    }
+                                    <span class="sf-badge @exam.TypeBadgeClass">@exam.TypeDisplayName</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="sf-badge @exam.RemainingDaysBadgeClass">@exam.RemainingDaysText</span>
+                            </td>
+                            <td class="text-end">
+                                <a class="sf-btn sf-btn-secondary sf-btn-sm"
+                                   asp-controller="Exams"
+                                   asp-action="Details"
+                                   asp-route-id="@exam.Id"
+                                   aria-label="@exam.Title sınav detayı">
+                                    Detay →
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

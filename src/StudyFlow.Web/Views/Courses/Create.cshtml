@@ -1,0 +1,73 @@
+@model CourseCreateViewModel
+@{
+    ViewData["Title"] = "Yeni Ders Ekle";
+}
+
+<div class="sf-create-shell">
+    <section class="sf-card" aria-labelledby="sfCreateCourseFormHeading">
+        <div class="sf-section-header">
+            <h2 id="sfCreateCourseFormHeading" class="sf-section-title">Yeni Ders</h2>
+            <div class="d-flex align-items-center gap-2">
+                <span class="sf-badge sf-badge-demo">Session</span>
+                <a class="sf-btn sf-btn-secondary sf-btn-sm" asp-controller="Courses" asp-action="Index">
+                    ← Dersler
+                </a>
+            </div>
+        </div>
+
+        @* Html.BeginForm (POST) otomatik olarak tek bir __RequestVerificationToken gizli alanı üretir. *@
+        @using (Html.BeginForm("Create", "Courses", FormMethod.Post, new { @class = "sf-create-form", novalidate = "novalidate" }))
+        {
+            if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(
+                    excludePropertyErrors: false,
+                    message: "Lütfen alan hatalarını kontrol edin:",
+                    htmlAttributes: new { @class = "sf-validation-summary", role = "alert" })
+            }
+
+            <div class="sf-form-field">
+                @Html.LabelFor(m => m.Name, new { @class = "sf-form-label" })
+                @Html.TextBoxFor(
+                    m => m.Name,
+                    new
+                    {
+                        @class = "sf-form-control sf-form-control-lg",
+                        maxlength = "120",
+                        placeholder = "Örn: Yapay Zekâ Uygulamaları",
+                        aria_describedby = "sfCourseNameError"
+                    })
+                @Html.ValidationMessageFor(
+                    m => m.Name,
+                    null,
+                    new { id = "sfCourseNameError", @class = "sf-field-error" })
+            </div>
+
+            <div class="sf-form-field">
+                @Html.LabelFor(m => m.WeeklyTargetMinutes, new { @class = "sf-form-label" })
+                @Html.TextBoxFor(
+                    m => m.WeeklyTargetMinutes,
+                    new
+                    {
+                        @class = "sf-form-control sf-form-control-lg",
+                        type = "number",
+                        min = "0",
+                        max = "10080",
+                        step = "1",
+                        aria_describedby = "sfCourseTargetError"
+                    })
+                @Html.ValidationMessageFor(
+                    m => m.WeeklyTargetMinutes,
+                    null,
+                    new { id = "sfCourseTargetError", @class = "sf-field-error" })
+            </div>
+
+            <div class="sf-form-actions pt-1">
+                @Html.SubmitButton("Kaydet", "sf-btn sf-btn-primary")
+                <a class="sf-btn sf-btn-secondary" asp-controller="Courses" asp-action="Index">
+                    İptal
+                </a>
+            </div>
+        }
+    </section>
+</div>

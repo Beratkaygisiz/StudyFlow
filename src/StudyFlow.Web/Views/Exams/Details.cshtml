@@ -1,0 +1,98 @@
+@model ExamDetailsViewModel
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="sf-stack">
+    <section class="sf-card" aria-label="Sınav üst gezinme çubuğu">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <div class="sf-toolbar-actions">
+                <a class="sf-btn sf-btn-secondary sf-btn-sm" asp-controller="Exams" asp-action="Index">
+                    ← Sınavlar
+                </a>
+
+                <a class="sf-btn sf-btn-primary sf-btn-sm"
+                   asp-controller="Courses"
+                   asp-action="Details"
+                   asp-route-id="@Model.CourseId">
+                    Ders Detayı: @Model.CourseName
+                </a>
+
+                <a class="sf-btn sf-btn-secondary sf-btn-sm"
+                   asp-controller="Exams"
+                   asp-action="Index"
+                   asp-route-courseId="@Model.CourseId">
+                    Dersin Sınavları
+                </a>
+            </div>
+
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                @if (Model.CourseIsArchived)
+                {
+                    <span class="sf-badge sf-badge-warning sf-archived-banner">Arşivli Ders</span>
+                }
+                <span class="sf-badge @Model.TypeBadgeClass">@Model.TypeDisplayName</span>
+                <span class="sf-badge @Model.PeriodStatusBadgeClass">@Model.PeriodStatusLabel</span>
+            </div>
+        </div>
+    </section>
+
+    <section aria-labelledby="sfExamInfoHeading">
+        <h2 id="sfExamInfoHeading" class="visually-hidden">Sınav Bilgileri</h2>
+        <div class="sf-grid-metrics">
+            <a asp-controller="Courses"
+               asp-action="Details"
+               asp-route-id="@Model.CourseId"
+               class="sf-card sf-metric-card sf-metric-card-link"
+               aria-label="Ders detayına git">
+                <div class="sf-metric-top">
+                    <span class="sf-stat-label">Ders</span>
+                    <span class="sf-badge @(Model.CourseIsArchived ? "sf-badge-warning" : "sf-badge-success")">
+                        @(Model.CourseIsArchived ? "Arşivli" : "Aktif")
+                    </span>
+                </div>
+                <div class="sf-stat-value sf-stat-value-compact mb-0">
+                    <span class="sf-card-title-link">
+                        @Model.CourseName
+                    </span>
+                </div>
+            </a>
+
+            <article class="sf-card sf-metric-card">
+                <div class="sf-metric-top">
+                    <span class="sf-stat-label">Tür</span>
+                    <span class="sf-badge @Model.TypeBadgeClass">@Model.TypeDisplayName</span>
+                </div>
+                <div class="sf-stat-value sf-stat-value-compact mb-0">@Model.TypeDisplayName</div>
+            </article>
+
+            <article class="sf-card sf-metric-card">
+                <div class="sf-metric-top">
+                    <span class="sf-stat-label">Tarih ve Saat</span>
+                    <span class="sf-metric-icon" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                    </span>
+                </div>
+                <div class="sf-stat-value sf-stat-value-compact mb-0">@Model.ScheduledAtLocal.ToString("dd.MM.yyyy HH:mm")</div>
+            </article>
+
+            <article class="sf-card sf-metric-card">
+                <div class="sf-metric-top">
+                    <span class="sf-stat-label">Durum</span>
+                    <span class="sf-metric-icon" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </span>
+                </div>
+                <div class="sf-stat-value sf-stat-value-compact mb-0">@Model.RemainingDaysText</div>
+            </article>
+        </div>
+    </section>
+</div>

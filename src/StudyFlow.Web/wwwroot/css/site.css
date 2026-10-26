@@ -1,0 +1,1585 @@
+/* ==========================================================================
+   StudyFlow — Metalik ve Dijital Kontrol Paneli Tasarım Sistemi (site.css)
+   - Koyu grafit arka plan: #0B0F17 + düşük opaklıklı dijital grid dokusu
+   - Kart yüzeyleri: #151C27 ve #202A38, titanyum/gümüş üst aydınlatma
+   - Ana metin: #EDF2F7, İkincil metin: #A7B3C4, Vurgu: Elektrik mavisi #60A5FA
+   - Hizalı sayılar: font-variant-numeric: tabular-nums
+   ========================================================================== */
+
+:root {
+  --sf-bg-canvas: #0B0F17;
+  --sf-surface-card: #151C27;
+  --sf-surface-elevated: #202A38;
+  --sf-surface-hover: #253142;
+  --sf-surface-input: #111722;
+
+  --sf-text: #EDF2F7;
+  --sf-text-secondary: #A7B3C4;
+  --sf-text-muted: #7C8B9E;
+
+  --sf-accent: #60A5FA;
+  --sf-accent-strong: #3B82F6;
+  --sf-accent-glow: rgba(96, 165, 250, 0.28);
+  --sf-accent-soft: rgba(96, 165, 250, 0.12);
+  --sf-accent-border: rgba(96, 165, 250, 0.38);
+
+  --sf-titanium-border: rgba(167, 179, 196, 0.16);
+  --sf-titanium-border-strong: rgba(203, 213, 225, 0.28);
+  --sf-specular-edge: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  --sf-gradient-card: linear-gradient(165deg, #1A2331 0%, #151C27 65%, #121822 100%);
+  --sf-gradient-elevated: linear-gradient(165deg, #253142 0%, #202A38 100%);
+  --sf-gradient-metallic: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0) 100%);
+  --sf-gradient-primary: linear-gradient(135deg, #60A5FA 0%, #2563EB 100%);
+  --sf-gradient-primary-hover: linear-gradient(135deg, #93C5FD 0%, #3B82F6 100%);
+
+  --sf-success-bg: rgba(16, 185, 129, 0.14);
+  --sf-success-text: #6EE7B7;
+  --sf-success-border: rgba(52, 211, 153, 0.35);
+
+  --sf-warning-bg: rgba(245, 158, 11, 0.15);
+  --sf-warning-text: #FCD34D;
+  --sf-warning-border: rgba(251, 191, 36, 0.38);
+
+  --sf-danger-bg: rgba(239, 68, 68, 0.16);
+  --sf-danger-text: #FCA5A5;
+  --sf-danger-border: rgba(248, 113, 113, 0.42);
+
+  --sf-info-bg: rgba(96, 165, 250, 0.14);
+  --sf-info-text: #93C5FD;
+  --sf-info-border: rgba(96, 165, 250, 0.36);
+
+  --sf-neutral-bg: rgba(167, 179, 196, 0.1);
+  --sf-neutral-text: #CBD5E1;
+  --sf-neutral-border: rgba(167, 179, 196, 0.22);
+
+  --sf-space-1: 8px;
+  --sf-space-2: 16px;
+  --sf-space-3: 24px;
+  --sf-space-4: 32px;
+
+  --sf-radius-sm: 10px;
+  --sf-radius-md: 14px;
+  --sf-radius-card: 16px;
+
+  --sf-shadow-card: 0 8px 24px rgba(0, 0, 0, 0.38), 0 1px 2px rgba(0, 0, 0, 0.5), var(--sf-specular-edge);
+  --sf-shadow-hover: 0 12px 28px rgba(0, 0, 0, 0.48), 0 0 18px rgba(96, 165, 250, 0.12), var(--sf-specular-edge);
+  --sf-transition: 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+  --sf-transition-lift: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+
+  --sf-sidebar-width: 220px;
+  --sf-font-sans: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  min-height: 100%;
+  color-scheme: dark;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--sf-font-sans);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--sf-text);
+  background-color: var(--sf-bg-canvas);
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(96, 165, 250, 0.08) 0%, transparent 55%),
+    linear-gradient(rgba(167, 179, 196, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(167, 179, 196, 0.028) 1px, transparent 1px);
+  background-size: 100% 100%, 28px 28px, 28px 28px;
+  background-attachment: fixed;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   1. Klavye Odağı ve Erişilebilirlik
+   ========================================================================== */
+.sf-skip-link {
+  position: absolute;
+  top: -60px;
+  left: var(--sf-space-2);
+  z-index: 1050;
+  padding: var(--sf-space-1) var(--sf-space-2);
+  background: var(--sf-gradient-primary);
+  color: #0B0F17;
+  font-weight: 700;
+  border-radius: var(--sf-radius-sm);
+  text-decoration: none;
+}
+
+.sf-skip-link:focus {
+  top: var(--sf-space-2);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--sf-accent) !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px var(--sf-accent-glow) !important;
+}
+
+/* ==========================================================================
+   2. Ana İskelet (Masaüstü Dar Sol Menü 220px + Geniş İçerik Alanı)
+   ========================================================================== */
+.sf-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.sf-sidebar {
+  background: linear-gradient(180deg, #131A24 0%, #0E141D 100%);
+  border-bottom: 1px solid var(--sf-titanium-border);
+  box-shadow: var(--sf-specular-edge);
+  width: 100%;
+  flex-shrink: 0;
+  z-index: 20;
+}
+
+.sf-sidebar-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px var(--sf-space-2);
+  gap: var(--sf-space-2);
+}
+
+.sf-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--sf-text);
+  text-decoration: none;
+  transition: color var(--sf-transition);
+}
+
+.sf-brand:hover {
+  color: var(--sf-accent);
+}
+
+.sf-brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: linear-gradient(145deg, #283548 0%, #151C27 100%);
+  color: var(--sf-accent);
+  border: 1px solid var(--sf-accent-border);
+  box-shadow: 0 0 14px rgba(96, 165, 250, 0.22), var(--sf-specular-edge);
+  flex-shrink: 0;
+}
+
+.sf-brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.sf-brand-name {
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  color: var(--sf-text);
+}
+
+.sf-brand-tag {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--sf-text-secondary);
+}
+
+.sf-mobile-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--sf-text);
+  background: var(--sf-gradient-elevated);
+  border: 1px solid var(--sf-titanium-border-strong);
+  border-radius: var(--sf-radius-sm);
+  box-shadow: var(--sf-specular-edge);
+  cursor: pointer;
+  transition: border-color var(--sf-transition), color var(--sf-transition);
+}
+
+.sf-mobile-toggle:hover {
+  border-color: var(--sf-accent);
+  color: var(--sf-accent);
+}
+
+.sf-nav-panel {
+  padding: 0 var(--sf-space-2) var(--sf-space-2);
+}
+
+.sf-nav-group-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--sf-text-muted);
+  padding: 0 10px 8px;
+}
+
+.sf-nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sf-nav-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sf-space-1);
+  padding: 9px 12px;
+  min-height: 40px;
+  border-radius: var(--sf-radius-sm);
+  color: var(--sf-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), background var(--sf-transition), color var(--sf-transition), border-color var(--sf-transition), box-shadow var(--sf-transition);
+  will-change: transform;
+}
+
+.sf-nav-link-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sf-nav-icon {
+  flex-shrink: 0;
+  color: currentColor;
+  opacity: 0.8;
+}
+
+a.sf-nav-link:hover {
+  background-color: var(--sf-surface-elevated);
+  color: var(--sf-text);
+  border-color: var(--sf-titanium-border);
+  transform: translateX(3px) translateY(-1px);
+}
+
+a.sf-nav-link:active {
+  transform: translateX(1px) translateY(0);
+}
+
+.sf-nav-link.is-active {
+  background: linear-gradient(90deg, rgba(96, 165, 250, 0.2) 0%, rgba(32, 42, 56, 0.85) 100%);
+  color: var(--sf-text);
+  font-weight: 600;
+  border-color: var(--sf-accent-border);
+  box-shadow: 0 0 16px rgba(96, 165, 250, 0.16), inset 3px 0 0 var(--sf-accent);
+}
+
+.sf-nav-link.is-active .sf-nav-icon {
+  color: var(--sf-accent);
+  opacity: 1;
+}
+
+a.sf-nav-link.is-active:hover {
+  color: #FFFFFF;
+  border-color: var(--sf-accent);
+}
+
+.sf-sidebar-footer {
+  margin-top: var(--sf-space-3);
+  padding: 12px;
+  background: var(--sf-gradient-card);
+  border: 1px solid var(--sf-titanium-border);
+  border-radius: var(--sf-radius-md);
+  box-shadow: var(--sf-specular-edge);
+  font-size: 0.75rem;
+  color: var(--sf-text-secondary);
+}
+
+.sf-sidebar-footer-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--sf-text);
+  margin-bottom: 6px;
+}
+
+/* ==========================================================================
+   3. Çalışma Alanı, Üst Bar ve Alt Bilgi
+   ========================================================================== */
+.sf-workspace {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sf-page-header {
+  background: linear-gradient(180deg, rgba(21, 28, 39, 0.92) 0%, rgba(15, 21, 31, 0.88) 100%);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--sf-titanium-border);
+  padding: 14px var(--sf-space-2);
+}
+
+.sf-page-header-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sf-space-2);
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.sf-page-header-titles {
+  min-width: 0;
+}
+
+.sf-page-header-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sf-space-1);
+}
+
+.sf-main {
+  flex: 1;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: var(--sf-space-2);
+}
+
+.sf-footer {
+  background-color: rgba(15, 21, 31, 0.9);
+  border-top: 1px solid var(--sf-titanium-border);
+  padding: 12px var(--sf-space-2);
+  font-size: 0.78125rem;
+  color: var(--sf-text-secondary);
+}
+
+.sf-footer-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sf-space-1);
+}
+
+/* ==========================================================================
+   4. Tipografi ve Tabular Sayılar
+   ========================================================================== */
+.sf-tabular,
+.sf-stat-value,
+.sf-kv-value,
+.sf-chart-value,
+.sf-ring-value,
+.sf-date-day,
+.sf-date-time,
+.sf-table td,
+.sf-table th {
+  font-variant-numeric: tabular-nums;
+}
+
+.sf-eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--sf-accent);
+  margin: 0 0 2px 0;
+}
+
+.sf-page-title {
+  font-size: clamp(1.5rem, 2vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--sf-text);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.sf-page-subtitle {
+  font-size: 0.8125rem;
+  color: var(--sf-text-secondary);
+  margin: 4px 0 0 0;
+}
+
+.sf-section-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sf-space-2);
+  margin-bottom: 14px;
+}
+
+.sf-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--sf-text);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.sf-section-desc {
+  font-size: 0.8125rem;
+  color: var(--sf-text-secondary);
+  margin: 2px 0 0 0;
+}
+
+.sf-toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sf-space-1);
+}
+
+.sf-card-title {
+  font-size: 0.96875rem;
+  font-weight: 700;
+  color: var(--sf-text);
+  margin: 0;
+  line-height: 1.35;
+}
+
+.sf-card-title-link {
+  color: var(--sf-text);
+  text-decoration: none;
+  transition: color var(--sf-transition);
+}
+
+.sf-card-title-link:hover {
+  color: var(--sf-accent);
+}
+
+/* ==========================================================================
+   5. Metalik Kartlar, İstatistik Kartları, Halka ve Grafik Bileşenleri
+   ========================================================================== */
+.sf-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sf-stack-sm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sf-grid-metrics,
+.sf-grid-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sf-space-2);
+}
+
+.sf-dashboard-hero,
+.sf-dashboard-bottom,
+.sf-detail-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  align-items: stretch;
+}
+
+.sf-detail-primary,
+.sf-detail-secondary {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.sf-card {
+  background: var(--sf-gradient-card);
+  border: 1px solid var(--sf-titanium-border);
+  border-radius: var(--sf-radius-card);
+  padding: 18px;
+  box-shadow: var(--sf-shadow-card);
+  min-width: 0;
+  position: relative;
+  transition: border-color var(--sf-transition), box-shadow var(--sf-transition), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sf-card-tinted {
+  background: var(--sf-gradient-elevated);
+  border: 1px solid var(--sf-titanium-border-strong);
+  border-radius: var(--sf-radius-md);
+  padding: 16px;
+  box-shadow: var(--sf-specular-edge);
+  min-width: 0;
+}
+
+.sf-metric-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px 18px;
+  background: linear-gradient(160deg, #1E2837 0%, #151C27 100%);
+}
+
+/* ==========================================================================
+   Etkileşimli ve Tıklanabilir Kutularda Yukarı Kalkma (Hover Lift) Efekti
+   ========================================================================== */
+.sf-card-lift,
+.sf-course-card,
+.sf-metric-card-link,
+a.sf-metric-card {
+  position: relative;
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--sf-transition-lift);
+  will-change: transform;
+}
+
+.sf-card-lift:hover,
+.sf-course-card:hover,
+.sf-metric-card-link:hover,
+a.sf-metric-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--sf-accent-border);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55), 0 0 24px rgba(96, 165, 250, 0.22), var(--sf-specular-edge);
+}
+
+.sf-card-lift:active,
+.sf-course-card:active,
+.sf-metric-card-link:active,
+a.sf-metric-card:active {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45), 0 0 12px rgba(96, 165, 250, 0.15), var(--sf-specular-edge);
+}
+
+.sf-card-lift:focus-visible,
+.sf-course-card:focus-within,
+.sf-metric-card-link:focus-visible,
+a.sf-metric-card:focus-visible {
+  transform: translateY(-4px);
+  border-color: var(--sf-accent);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55), 0 0 24px var(--sf-accent-glow), var(--sf-specular-edge);
+}
+
+.sf-metric-card-link,
+a.sf-metric-card {
+  color: inherit;
+  display: flex;
+}
+
+.sf-metric-card-link:hover .sf-stat-label,
+a.sf-metric-card:hover .sf-stat-label {
+  color: var(--sf-accent);
+}
+
+.sf-metric-card-link:hover .sf-metric-icon,
+a.sf-metric-card:hover .sf-metric-icon {
+  border-color: var(--sf-accent-border);
+  box-shadow: 0 0 12px var(--sf-accent-glow);
+}
+
+.sf-metric-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sf-space-1);
+  margin-bottom: 8px;
+}
+
+.sf-metric-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--sf-titanium-border);
+  background: var(--sf-surface-elevated);
+  color: var(--sf-accent);
+  flex-shrink: 0;
+}
+
+.sf-metric-icon-danger {
+  color: var(--sf-danger-text);
+  border-color: var(--sf-danger-border);
+  background: var(--sf-danger-bg);
+}
+
+.sf-metric-icon-neutral {
+  color: var(--sf-text-secondary);
+}
+
+.sf-stat-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--sf-text-secondary);
+  margin: 0;
+}
+
+.sf-stat-value {
+  font-size: 1.85rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--sf-text);
+  line-height: 1.15;
+  margin-bottom: 4px;
+}
+
+.sf-stat-unit {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--sf-text-secondary);
+  margin-left: 2px;
+}
+
+.sf-stat-value-compact {
+  font-size: 1.45rem;
+}
+
+.sf-stat-meta {
+  font-size: 0.78125rem;
+  color: var(--sf-text-secondary);
+  margin: 0;
+}
+
+/* ==========================================================================
+   5.1. Dashboard Baskın Haftalık Grafik + İlerleme Halkası (Progress Ring)
+   ========================================================================== */
+.sf-vchart-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 10px;
+  align-items: end;
+  padding: 16px 12px 12px;
+  background-color: rgba(11, 15, 23, 0.55);
+  border: 1px solid var(--sf-titanium-border);
+  border-radius: var(--sf-radius-md);
+  min-height: 220px;
+}
+
+.sf-vchart-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.sf-vchart-col.is-today .sf-vchart-day {
+  color: var(--sf-accent);
+  font-weight: 700;
+}
+
+.sf-vchart-bars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 5px;
+  height: 136px;
+  width: 100%;
+  padding: 0 4px;
+  border-bottom: 1px solid var(--sf-titanium-border);
+}
+
+.sf-vchart-bar {
+  width: 12px;
+  min-height: 4px;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.25s ease;
+}
+
+.sf-vchart-bar-plan {
+  background: linear-gradient(180deg, #64748B 0%, #334155 100%);
+  border: 1px solid rgba(203, 213, 225, 0.25);
+}
+
+.sf-vchart-bar-actual {
+  background: linear-gradient(180deg, #60A5FA 0%, #2563EB 100%);
+  box-shadow: 0 0 12px rgba(96, 165, 250, 0.35);
+}
+
+.sf-vchart-values {
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--sf-text);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sf-vchart-day {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--sf-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sf-ring-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+}
+
+.sf-ring-wrap {
+  position: relative;
+  width: 168px;
+  height: 168px;
+  margin: 8px auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sf-ring-svg {
+  width: 168px;
+  height: 168px;
+  transform: rotate(-90deg);
+}
+
+.sf-ring-track {
+  fill: none;
+  stroke: var(--sf-surface-elevated);
+  stroke-width: 12;
+}
+
+.sf-ring-progress {
+  fill: none;
+  stroke: var(--sf-accent);
+  stroke-width: 12;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.45));
+  transition: stroke-dashoffset 0.35s ease;
+}
+
+.sf-ring-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.sf-ring-value {
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: var(--sf-text);
+  line-height: 1.1;
+}
+
+.sf-ring-caption {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--sf-text-secondary);
+  margin-top: 2px;
+}
+
+.sf-ring-stats {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  padding: 10px 12px;
+  background-color: rgba(11, 15, 23, 0.5);
+  border: 1px solid var(--sf-titanium-border);
+  border-radius: var(--sf-radius-sm);
+  margin-bottom: 12px;
+}
+
+/* ==========================================================================
+   5.2. Ders Kartı (_CourseCard) ve Tarih Bloklu Sınav Satırları
+   ========================================================================== */
+.sf-course-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.sf-course-card .sf-card-title-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: var(--sf-radius-card);
+}
+
+.sf-course-card .sf-course-card-footer a,
+.sf-course-card .sf-badge {
+  position: relative;
+  z-index: 2;
+}
+
+.sf-course-card:hover .sf-card-title-link {
+  color: var(--sf-accent);
+}
+
+.sf-course-card:hover .sf-btn-primary {
+  background: var(--sf-gradient-primary-hover);
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.45);
+}
+
+.sf-course-card.is-archived {
+  background: linear-gradient(165deg, #161D27 0%, #10151E 100%);
+  border-color: rgba(148, 163, 184, 0.14);
+  opacity: 0.92;
+}
+
+.sf-course-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sf-course-card-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sf-space-1);
+  padding-top: 12px;
+  border-top: 1px solid var(--sf-titanium-border);
+}
+
+.sf-kv-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sf-space-1);
+  font-size: 0.8125rem;
+}
+
+.sf-kv-label {
+  color: var(--sf-text-secondary);
+  font-weight: 500;
+}
+
+.sf-kv-value {
+  color: var(--sf-text);
+  font-weight: 700;
+}
+
+.sf-topic-progress-box {
+  background-color: rgba(11, 15, 23, 0.55);
+  border: 1px solid var(--sf-titanium-border);
+  border-radius: var(--sf-radius-sm);
+  padding: 10px 12px;
+}
+
+.sf-zero-topic-note {
+  color: var(--sf-info-text);
+  font-size: 0.75rem;
+}
+
+.sf-date-block {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 68px;
+  padding: 6px 10px;
+  background: var(--sf-gradient-elevated);
+  border: 1px solid var(--sf-titanium-border-strong);
+  border-radius: var(--sf-radius-sm);
+  box-shadow: var(--sf-specular-edge);
+  line-height: 1.2;
+}
+
+.sf-date-day {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--sf-text);
+}
+
+.sf-date-time {
+  font-size: 0.72rem;
+  color: var(--sf-accent);
+  font-weight: 600;
+}
+
+.sf-side-highlight {
+  background: var(--sf-gradient-elevated);
+  border: 1px solid var(--sf-titanium-border);
+  border-radius: var(--sf-radius-md);
+  padding: 12px 14px;
+}
+
+.sf-task-feed {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sf-task-feed-item {
+  padding: 10px 12px;
+  background: rgba(11, 15, 23, 0.5);
+  border: 1px solid var(--sf-titanium-border);
+  border-radius: var(--sf-radius-sm);
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), border-color var(--sf-transition), box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.sf-task-feed-item:hover {
+  transform: translateY(-2px);
+  border-color: var(--sf-titanium-border-strong);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+}
+
+.sf-task-feed-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sf-space-1);
+  margin-bottom: 4px;
+}
+
+.sf-task-feed-title {
+  font-size: 0.84375rem;
+  font-weight: 600;
+  color: var(--sf-text);
+}
+
+.sf-task-feed-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--sf-text-secondary);
+}
+
+/* ==========================================================================
+   6. Formlar, Inputlar ve Doğrulama Durumları
+   ========================================================================== */
+.sf-filter-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  align-items: end;
+}
+
+.sf-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sf-form-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--sf-text);
+  margin: 0;
+}
+
+.sf-form-control,
+.sf-form-select {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  font-family: var(--sf-font-sans);
+  font-size: 0.9375rem;
+  color: var(--sf-text);
+  background-color: var(--sf-surface-input);
+  border: 1px solid var(--sf-titanium-border-strong);
+  border-radius: var(--sf-radius-sm);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+  transition: border-color var(--sf-transition), box-shadow var(--sf-transition);
+}
+
+.sf-form-control-lg {
+  min-height: 46px;
+  padding: 10px 14px;
+  font-size: 1rem;
+}
+
+.sf-form-control:hover,
+.sf-form-select:hover {
+  border-color: var(--sf-accent);
+}
+
+.sf-form-control::placeholder {
+  color: var(--sf-text-muted);
+}
+
+.sf-form-select option {
+  background-color: var(--sf-surface-card);
+  color: var(--sf-text);
+}
+
+.sf-filter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sf-space-1);
+}
+
+.sf-create-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 700px;
+}
+
+.sf-create-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.sf-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sf-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.sf-form-control.input-validation-error,
+.sf-form-select.input-validation-error {
+  border-color: #F87171;
+  background-color: rgba(127, 29, 29, 0.18);
+}
+
+.sf-field-error,
+.field-validation-error {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--sf-danger-text);
+}
+
+.field-validation-valid {
+  display: none;
+}
+
+.sf-validation-summary,
+.validation-summary-errors {
+  background-color: var(--sf-danger-bg);
+  color: var(--sf-danger-text);
+  border: 1px solid var(--sf-danger-border);
+  border-radius: var(--sf-radius-sm);
+  padding: 14px 16px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.sf-validation-summary ul,
+.validation-summary-errors ul {
+  margin: 6px 0 0 0;
+  padding-left: 20px;
+  font-weight: 500;
+}
+
+.validation-summary-valid {
+  display: none;
+}
+
+.sf-alert-success {
+  background-color: var(--sf-success-bg);
+  color: var(--sf-success-text);
+  border: 1px solid var(--sf-success-border);
+  border-radius: var(--sf-radius-sm);
+  padding: 12px 16px;
+  font-size: 0.875rem;
+}
+
+.sf-session-notice {
+  background-color: var(--sf-info-bg);
+  color: var(--sf-info-text);
+  border: 1px solid var(--sf-info-border);
+  border-radius: var(--sf-radius-sm);
+  padding: 12px 14px;
+  font-size: 0.8125rem;
+}
+
+.sf-archived-banner {
+  background-color: var(--sf-warning-bg);
+  color: var(--sf-warning-text);
+  border: 1px solid var(--sf-warning-border);
+  border-radius: var(--sf-radius-sm);
+  padding: 12px 14px;
+  font-size: 0.8125rem;
+}
+
+/* ==========================================================================
+   7. Rozetler ve İlerleme Çubukları
+   ========================================================================== */
+.sf-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.sf-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--sf-accent);
+  box-shadow: 0 0 8px var(--sf-accent);
+  display: inline-block;
+}
+
+.sf-badge-demo {
+  background-color: var(--sf-accent-soft);
+  color: var(--sf-accent);
+  border-color: var(--sf-accent-border);
+}
+
+.sf-badge-primary {
+  background: var(--sf-gradient-primary);
+  color: #FFFFFF;
+  box-shadow: 0 0 12px rgba(96, 165, 250, 0.25);
+}
+
+.sf-badge-info {
+  background-color: var(--sf-info-bg);
+  color: var(--sf-info-text);
+  border-color: var(--sf-info-border);
+}
+
+.sf-badge-success {
+  background-color: var(--sf-success-bg);
+  color: var(--sf-success-text);
+  border-color: var(--sf-success-border);
+}
+
+.sf-badge-warning {
+  background-color: var(--sf-warning-bg);
+  color: var(--sf-warning-text);
+  border-color: var(--sf-warning-border);
+}
+
+.sf-badge-danger {
+  background-color: var(--sf-danger-bg);
+  color: var(--sf-danger-text);
+  border-color: var(--sf-danger-border);
+}
+
+.sf-badge-neutral {
+  background-color: var(--sf-neutral-bg);
+  color: var(--sf-neutral-text);
+  border-color: var(--sf-neutral-border);
+}
+
+.sf-progress {
+  width: 100%;
+  height: 8px;
+  background-color: #0E141E;
+  border: 1px solid var(--sf-titanium-border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.sf-progress-lg {
+  height: 12px;
+}
+
+.sf-progress-bar {
+  height: 100%;
+  background: var(--sf-gradient-primary);
+  box-shadow: 0 0 10px rgba(96, 165, 250, 0.45);
+  border-radius: 999px;
+  transition: width 0.25s ease;
+}
+
+/* ==========================================================================
+   7.1. Haftalık Görünüm (Dashboard/Weekly) Yatay Karşılaştırma Grafiği
+   ========================================================================== */
+.sf-weekly-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sf-chart-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sf-space-1);
+  padding: 12px 16px;
+  background: rgba(11, 15, 23, 0.55);
+  border: 1px solid var(--sf-titanium-border);
+  border-radius: var(--sf-radius-sm);
+}
+
+.sf-chart-row.is-today {
+  background: linear-gradient(90deg, rgba(96, 165, 250, 0.14) 0%, rgba(32, 42, 56, 0.55) 100%);
+  border-color: var(--sf-accent-border);
+}
+
+.sf-chart-day {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sf-space-1);
+}
+
+.sf-chart-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sf-chart-bar-line {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) 68px;
+  align-items: center;
+  gap: var(--sf-space-1);
+}
+
+.sf-chart-bar-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sf-text-secondary);
+}
+
+.sf-chart-track {
+  width: 100%;
+  height: 10px;
+  background-color: #0B0F17;
+  border: 1px solid var(--sf-titanium-border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.sf-chart-fill {
+  height: 100%;
+  border-radius: 999px;
+  min-width: 2px;
+}
+
+.sf-chart-fill-planned {
+  background: linear-gradient(90deg, #64748B 0%, #94A3B8 100%);
+}
+
+.sf-chart-fill-actual {
+  background: var(--sf-gradient-primary);
+  box-shadow: 0 0 10px rgba(96, 165, 250, 0.4);
+}
+
+.sf-chart-value {
+  font-size: 0.8125rem;
+  text-align: right;
+  color: var(--sf-text);
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   8. Tablolar, Boş Durumlar ve Metalik/Elektrik Mavisi Butonlar
+   ========================================================================== */
+.sf-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--sf-titanium-border);
+  border-radius: var(--sf-radius-md);
+  background-color: rgba(11, 15, 23, 0.45);
+}
+
+.sf-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84375rem;
+  color: var(--sf-text);
+}
+
+.sf-table th,
+.sf-table td {
+  padding: 11px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--sf-titanium-border);
+  vertical-align: middle;
+}
+
+.sf-table thead th {
+  background-color: rgba(32, 42, 56, 0.75);
+  color: var(--sf-text-secondary);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--sf-titanium-border-strong);
+  white-space: nowrap;
+}
+
+.sf-table tbody tr {
+  transition: background-color var(--sf-transition);
+}
+
+.sf-table tbody tr:hover {
+  background-color: rgba(32, 42, 56, 0.55);
+}
+
+.sf-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.sf-table tbody tr.is-today {
+  background-color: rgba(96, 165, 250, 0.1);
+}
+
+.sf-table tfoot th,
+.sf-table tfoot td {
+  background-color: rgba(32, 42, 56, 0.85);
+  border-top: 1px solid var(--sf-titanium-border-strong);
+  font-weight: 700;
+}
+
+.sf-empty-state {
+  background: rgba(11, 15, 23, 0.5);
+  border: 1px dashed var(--sf-titanium-border-strong);
+  border-radius: var(--sf-radius-md);
+  padding: var(--sf-space-3);
+  text-align: center;
+}
+
+.sf-empty-title {
+  font-size: 0.96875rem;
+  font-weight: 700;
+  color: var(--sf-text);
+  margin: 0 0 6px 0;
+}
+
+.sf-empty-text {
+  font-size: 0.8125rem;
+  color: var(--sf-text-secondary);
+  max-width: 540px;
+  margin: 0 auto;
+}
+
+.sf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  min-height: 38px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: var(--sf-radius-sm);
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), background var(--sf-transition), color var(--sf-transition), border-color var(--sf-transition), box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.sf-btn:hover {
+  transform: translateY(-2px);
+}
+
+.sf-btn:active {
+  transform: translateY(0);
+}
+
+.sf-btn-sm {
+  padding: 5px 11px;
+  min-height: 32px;
+  font-size: 0.78125rem;
+}
+
+.sf-btn-primary {
+  background: var(--sf-gradient-primary);
+  color: #FFFFFF;
+  border-color: rgba(147, 197, 253, 0.4);
+  box-shadow: 0 0 14px rgba(96, 165, 250, 0.25), var(--sf-specular-edge);
+}
+
+.sf-btn-primary:hover {
+  background: var(--sf-gradient-primary-hover);
+  color: #FFFFFF;
+  box-shadow: 0 8px 22px rgba(96, 165, 250, 0.45), var(--sf-specular-edge);
+}
+
+.sf-btn-secondary {
+  background: var(--sf-gradient-elevated);
+  color: var(--sf-text);
+  border-color: var(--sf-titanium-border-strong);
+  box-shadow: var(--sf-specular-edge);
+}
+
+.sf-btn-secondary:hover {
+  background: var(--sf-surface-hover);
+  color: var(--sf-accent);
+  border-color: var(--sf-accent-border);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), 0 0 12px rgba(96, 165, 250, 0.18);
+}
+  color: var(--sf-accent);
+  border-color: var(--sf-accent-border);
+}
+
+.sf-btn-disabled {
+  background-color: var(--sf-neutral-bg);
+  color: var(--sf-text-muted);
+  border-color: var(--sf-titanium-border);
+  cursor: not-allowed;
+  user-select: none;
+}
+
+/* ==========================================================================
+   9. Responsive Kırılımlar: 768px, 992px+ (Sol Menü 220px) ve 1180px+
+   ========================================================================== */
+@media (min-width: 768px) {
+  .sf-page-header,
+  .sf-main,
+  .sf-footer {
+    padding-left: var(--sf-space-3);
+    padding-right: var(--sf-space-3);
+  }
+
+  .sf-card {
+    padding: 20px 22px;
+  }
+
+  .sf-grid-metrics,
+  .sf-grid-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sf-filter-form {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) auto;
+  }
+
+  .sf-chart-row {
+    grid-template-columns: 160px minmax(0, 1fr);
+    align-items: center;
+    gap: var(--sf-space-2);
+  }
+
+  .sf-chart-day {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 2px;
+  }
+}
+
+@media (min-width: 992px) {
+  .sf-shell {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .sf-sidebar {
+    width: var(--sf-sidebar-width); /* 220px dar masaüstü sol menü */
+    border-bottom: none;
+    border-right: 1px solid var(--sf-titanium-border);
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .sf-sidebar-top {
+    padding: 18px 16px;
+    border-bottom: 1px solid var(--sf-titanium-border);
+  }
+
+  .sf-mobile-toggle {
+    display: none;
+  }
+
+  .sf-nav-panel.collapse {
+    display: flex !important;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+    padding: 16px 12px;
+  }
+
+  .sf-page-header {
+    padding: 18px var(--sf-space-4);
+  }
+
+  .sf-main {
+    padding: 24px var(--sf-space-4);
+  }
+
+  .sf-footer {
+    padding: 14px var(--sf-space-4);
+  }
+
+  .sf-grid-metrics {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1140px) {
+  .sf-dashboard-hero {
+    grid-template-columns: minmax(0, 1.85fr) minmax(300px, 0.95fr);
+  }
+
+  .sf-dashboard-bottom {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  }
+
+  .sf-detail-layout {
+    grid-template-columns: minmax(0, 1.3fr) minmax(340px, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+    transform: none !important;
+  }
+}

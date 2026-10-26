@@ -1,0 +1,248 @@
+@model CourseDetailsViewModel
+@{
+    ViewData["Title"] = Model.Name;
+    var successMessage = TempData["SuccessMessage"]?.ToString();
+}
+
+<div class="sf-stack">
+    @if (!string.IsNullOrWhiteSpace(successMessage))
+    {
+        <div class="sf-alert-success" role="status">
+            @successMessage
+        </div>
+    }
+
+    <section class="sf-card" aria-label="Ders üst gezinme ve durum bilgisi">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <div class="sf-toolbar-actions">
+                <a class="sf-btn sf-btn-secondary sf-btn-sm" asp-controller="Courses" asp-action="Index">
+                    ← Dersler
+                </a>
+
+                <a class="sf-btn sf-btn-primary sf-btn-sm"
+                   asp-controller="Exams"
+                   asp-action="Index"
+                   asp-route-courseId="@Model.Id">
+                    Sınavlar (@Model.Exams.Count)
+                </a>
+
+                <a class="sf-btn sf-btn-secondary sf-btn-sm" asp-controller="Courses" asp-action="Create">
+                    + Yeni Ders
+                </a>
+            </div>
+
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                @if (Model.IsSessionCourse)
+                {
+                    <span class="sf-badge sf-badge-demo">Session</span>
+                }
+                @if (Model.IsArchived)
+                {
+                    <span class="sf-badge sf-badge-warning">Arşivli Ders</span>
+                }
+                else
+                {
+                    <span class="sf-badge sf-badge-success">Aktif Ders</span>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section aria-labelledby="sfCourseDetailMetricsHeading">
+        <h2 id="sfCourseDetailMetricsHeading" class="visually-hidden">Ders Özeti</h2>
+        <div class="sf-grid-metrics">
+            <article class="sf-card sf-metric-card">
+                <div class="sf-metric-top">
+                    <span class="sf-stat-label">Durum</span>
+                    <span class="sf-badge @(Model.IsArchived ? "sf-badge-warning" : "sf-badge-success")">
+                        @(Model.IsArchived ? "Arşivli" : "Aktif")
+                    </span>
+                </div>
+                <div class="sf-stat-value sf-stat-value-compact mb-0">@(Model.IsArchived ? "Arşivli" : "Aktif")</div>
+            </article>
+
+            <article class="sf-card sf-metric-card">
+                <div class="sf-metric-top">
+                    <span class="sf-stat-label">Haftalık Hedef</span>
+                    <span class="sf-metric-icon" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </span>
+                </div>
+                <div class="sf-stat-value mb-0">@Model.WeeklyTargetMinutes dk</div>
+            </article>
+
+            <article class="sf-card sf-metric-card">
+                <div class="sf-metric-top">
+                    <span class="sf-stat-label">İlerleme</span>
+                    <span class="sf-badge sf-badge-info">@Model.CompletedTopicCount / @Model.TotalTopicCount</span>
+                </div>
+                <div class="sf-stat-value mb-0">%@Model.TopicProgressPercent.ToString("0.0")</div>
+            </article>
+
+            <a asp-controller="Exams"
+               asp-action="Index"
+               asp-route-courseId="@Model.Id"
+               class="sf-card sf-metric-card sf-metric-card-link"
+               aria-label="Bu dersin sınavlarını listele">
+                <div class="sf-metric-top">
+                    <span class="sf-stat-label">Sınavlar</span>
+                    <span class="sf-metric-icon" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                    </span>
+                </div>
+                <div class="sf-stat-value mb-0">@Model.Exams.Count</div>
+            </a>
+        </div>
+    </section>
+
+    <div class="sf-detail-layout">
+        <div class="sf-detail-primary">
+            <section class="sf-card" aria-labelledby="sfCourseTopicsHeading">
+                <div class="sf-section-header">
+                    <h2 id="sfCourseTopicsHeading" class="sf-section-title">
+                        Konular (@Model.TotalTopicCount)
+                    </h2>
+                    <span class="sf-badge sf-badge-primary">
+                        %@Model.TopicProgressPercent.ToString("0.0")
+                    </span>
+                </div>
+
+                <div class="sf-progress mb-3"
+                     role="progressbar"
+                     aria-label="@Model.Name konu ilerlemesi"
+                     aria-valuenow="@((int)Math.Round(Model.TopicProgressPercent))"
+                     aria-valuemin="0"
+                     aria-valuemax="100">
+                    <div class="sf-progress-bar"
+                         style="width: @(Model.TopicProgressPercent.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture))%"></div>
+                </div>
+
+                @if (!Model.HasTopics)
+                {
+                    <div class="sf-empty-state" role="status">
+                        <p class="sf-empty-text mb-0">Konu yok (%0,0).</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="sf-table-wrap">
+                        <table class="sf-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Sıra</th>
+                                    <th scope="col">Konu</th>
+                                    <th scope="col">Durum</th>
+                                    <th scope="col">Tekrar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var topic in Model.Topics)
+                                {
+                                    <tr>
+                                        <td>#@topic.SortOrder</td>
+                                        <td><strong>@topic.Title</strong></td>
+                                        <td>
+                                            <span class="sf-badge @topic.StatusBadgeClass">
+                                                @topic.StatusDisplayName
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @if (topic.ReviewOn.HasValue)
+                                            {
+                                                <span>@topic.ReviewOn.Value.ToString("dd.MM.yyyy")</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-secondary">—</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </section>
+        </div>
+
+        <div class="sf-detail-secondary">
+            @await Component.InvokeAsync("UpcomingExams", new { courseId = Model.Id })
+
+            <section class="sf-card" aria-labelledby="sfCourseExamsHeading">
+                <div class="sf-section-header">
+                    <h2 id="sfCourseExamsHeading" class="sf-section-title">
+                        Tüm Sınavlar (@Model.Exams.Count)
+                    </h2>
+                    <a class="sf-btn sf-btn-secondary sf-btn-sm"
+                       asp-controller="Exams"
+                       asp-action="Index"
+                       asp-route-courseId="@Model.Id">
+                        Filtrele →
+                    </a>
+                </div>
+
+                @if (Model.Exams.Count == 0)
+                {
+                    <div class="sf-empty-state" role="status">
+                        <p class="sf-empty-text mb-0">Sınav kaydı yok.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="sf-stack-sm">
+                        @foreach (var exam in Model.Exams)
+                        {
+                            <article class="sf-card-tinted" aria-labelledby="sfCourseExamTitle-@exam.Id">
+                                <div class="d-flex flex-wrap align-items-start justify-content-between gap-2 mb-2">
+                                    <h3 id="sfCourseExamTitle-@exam.Id" class="sf-card-title">
+                                        <a class="sf-card-title-link"
+                                           asp-controller="Exams"
+                                           asp-action="Details"
+                                           asp-route-id="@exam.Id">
+                                            @exam.Title
+                                        </a>
+                                    </h3>
+                                    <span class="sf-badge @exam.TypeBadgeClass">@exam.TypeDisplayName</span>
+                                </div>
+
+                                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                                    <span class="sf-stat-meta sf-tabular">
+                                        <strong>@exam.ScheduledAtLocal.ToString("dd.MM.yyyy HH:mm")</strong>
+                                        ·
+                                        @if (exam.DaysRemaining == 0)
+                                        {
+                                            <span>Bugün</span>
+                                        }
+                                        else if (exam.IsPast)
+                                        {
+                                            <span>@Math.Abs(exam.DaysRemaining) gün geçti</span>
+                                        }
+                                        else
+                                        {
+                                            <span>@exam.DaysRemaining gün kaldı</span>
+                                        }
+                                    </span>
+
+                                    <a class="sf-btn sf-btn-primary sf-btn-sm"
+                                       asp-controller="Exams"
+                                       asp-action="Details"
+                                       asp-route-id="@exam.Id">
+                                        Detay →
+                                    </a>
+                                </div>
+                            </article>
+                        }
+                    </div>
+                }
+            </section>
+        </div>
+    </div>
+</div>

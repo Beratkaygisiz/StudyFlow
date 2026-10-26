@@ -10,6 +10,7 @@ Fazlar takvim haftası değildir. Yalnız ilk ders tesliminin koşulları bilini
 | --- | --- | --- |
 | 0 — Hazırlık | Kapsamı birlikte oku; görev/plan/oturum ayrımını açıkla; SDK, kapasite ve paylaşım kararlarını kaydet. | İlk teslim koşulları ve açık kararlar net. |
 | 1 — MVC iskeleti | DemoData, ortak layout/CSS, üç Controller ve altı View. | FR-032/033; menü, Razor, boş durum ve responsive kabulü. |
+| 1B — Geçici ders formu ve ortak bileşenler | Temel altı ekrana ek `Courses/Create` (7. tam View), `HtmlHelpers`, `DemoCourseStore` + `Session` JSON saklama, PRG akışı, `_CourseCard` PartialView ve `UpcomingExams` ViewComponent. | FR-037–039; form → detay → liste → dashboard tutarlılığı. |
 | 2 — Kalıcı veri | Demo ApplicationUser, Course/Exam/Receipt, DbContext, ilk migration, CRUD, arşiv, version ve tekrar koruması. | FR-001–008,028,034–036; gerçek SQL kalıcılık ve bütünlük testleri. |
 | 3 — Konu/görev/plan | Topic/Task/Plan, durumlar, filtreler, plan ekranları ve migration. | FR-009–019; konu durumu Must, not/tekrar tarihi Should. |
 | 4 — Gerçek çalışma | Timer/manuel oturum, düzeltme/iptal, yerel gün hesabı, dashboard ve plan karşılaştırması. | FR-020–026; FR-027 Should. Yarış, süre ve kurtarma testleri. |

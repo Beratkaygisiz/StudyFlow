@@ -71,6 +71,9 @@ FR kimlikleri önceki belgelerle ilişki kurmak için korunmuştur. Bu tablo ve 
 | FR-034 | Yeni kayıt formlarında PRG ve OperationId/receipt ile tekrarı engelle; aynı anahtar/girdi aynı kaydı, farklı girdi çatışmayı verir. | Must |
 | FR-035 | Düzenleme/silmede RowVersion kontrolü; eski sekme yeni veriyi sessizce ezemez; kullanıcıya yeniden yükleme seçeneği sunulur. | Must |
 | FR-036 | Kimlik doğrulama öncesi yalnız Development ve yerelde sabit demo sahibi; bütün sorgular owner kapsamlı; demo modu diğer ortamlarda başlamaz. | Must |
+| FR-037 | Faz 1B'de `Courses/Create` (`GET`/`POST`) üzerinde tipli `CourseCreateViewModel` (`Name`: trim sonrası 1–120, `WeeklyTargetMinutes`: 0–10080) ve `HtmlHelpers` ile yeni aktif ders oluştur; `Id`, `IsArchived` ve sahiplik kullanıcıdan alınmasın. | Must / Faz 1B |
+| FR-038 | Faz 1B'de yeni dersleri `Session` içinde JSON olarak geçici sakla; `DemoCourseStore` ile salt okunur `DemoData` ve oturum derslerini birleştir; PRG ile `/Courses/Details/{id}` sayfasına yönlendir ve kaydı `/Courses` ile `/Dashboard` özetlerinde göster. | Must / Faz 1B |
+| FR-039 | Faz 1B'de geçersiz formda aynı View, girilen değerler ve alan hatalarını koru (`Session`'a ekleme); POST'ta tek geçerli anti-forgery token (`ValidateAntiForgeryToken`) kullan; ders/sınav GET filtrelerini `HtmlHelpers` ile üret; `_CourseCard` PartialView'unu (`Courses/Index`, `Dashboard/Index`) ve `UpcomingExams` ViewComponent'ini (`Dashboard/Index`, `Courses/Details`) tipli modellerle çalıştır. | Must / Faz 1B |
 
 ## Ortak iş kuralları
 
